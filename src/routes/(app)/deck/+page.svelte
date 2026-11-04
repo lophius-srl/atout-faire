@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
   import { trouverCategorie } from "$lib/categories";
   import { libelleFrequence, libellePenibilite } from "$lib/deck";
+  import { avecRetour } from "$lib/formulaire";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
@@ -27,9 +29,40 @@
 </div>
 
 {#if data.taches.length === 0}
-  <p class="vide">
-    Aucune tâche pour l'instant. Commence par celles de tous les jours !
-  </p>
+  <form
+    method="POST"
+    action="?/ajouterModeles"
+    class="modeles"
+    use:enhance={avecRetour("Tâches ajoutées au deck")}
+  >
+    <h2>Démarrer avec des tâches courantes</h2>
+    <p class="aide">
+      Coche celles qui vous concernent : tu pourras les ajuster ensuite.
+    </p>
+    <ul>
+      {#each data.modeles as modele (modele.nom)}
+        {@const categorie = trouverCategorie(modele.categorie)}
+        <li>
+          <label
+            class="modele"
+            style:--couleur={categorie.couleur}
+            style:--encre={categorie.encre}
+          >
+            <input type="checkbox" name="modele" value={modele.nom} />
+            <span class="nom">{modele.nom}</span>
+            <span class="details"
+              >{libelleFrequence(modele)} · {libellePenibilite(
+                modele.penibilite,
+              )}</span
+            >
+          </label>
+        </li>
+      {/each}
+    </ul>
+    <button type="submit" class="bouton-principal"
+      >Ajouter les tâches cochées</button
+    >
+  </form>
 {:else}
   <ul class="liste">
     {#each data.taches as tache (tache.id)}
@@ -62,8 +95,7 @@
     font-size: 1.8rem;
   }
 
-  .aide,
-  .vide {
+  .aide {
     color: var(--texte-doux);
   }
 
@@ -80,6 +112,53 @@
     min-height: 44px;
     color: var(--texte);
     font-weight: 700;
+  }
+
+  .modeles {
+    margin-top: 20px;
+  }
+
+  .modeles h2 {
+    margin: 0;
+    font-size: 1.15rem;
+  }
+
+  .modeles ul {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0 16px;
+    padding: 0;
+    list-style: none;
+  }
+
+  .modele {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 12px;
+    align-items: center;
+    min-height: 52px;
+    padding: 8px 14px;
+    border-radius: 14px;
+    background: var(--couleur);
+    color: var(--encre);
+    cursor: pointer;
+  }
+
+  .modele input {
+    grid-row: span 2;
+    width: 22px;
+    height: 22px;
+    accent-color: var(--encre);
+  }
+
+  .modele .nom {
+    font-weight: 800;
+  }
+
+  .modele .details {
+    font-size: 0.8rem;
+    font-weight: 600;
   }
 
   .liste {
