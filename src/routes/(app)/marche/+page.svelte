@@ -1,9 +1,12 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { duree } from "$lib/animations";
   import { avecRetour } from "$lib/formulaire";
   import { resolve } from "$app/paths";
   import CarteTache from "$lib/components/Carte.svelte";
   import { organiserMarche } from "$lib/marche";
+  import { flip } from "svelte/animate";
+  import { fly } from "svelte/transition";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
@@ -28,7 +31,7 @@
   </p>
 {:else}
   <p class="aide">
-    Les cartes qui attendent preneur. Pioche celles que tu prends.
+    Les cartes qui attendent preneur. Touche une carte pour la prendre.
   </p>
 
   {#each sections as section (section.titre)}
@@ -40,6 +43,8 @@
         <ul class="grille">
           {#each section.cartes as { carte, niveau } (carte.id)}
             <li
+              animate:flip={{ duration: duree(250) }}
+              out:fly={{ y: -60, duration: duree(250) }}
               class="emplacement"
               class:niveau-1={niveau === 1}
               class:niveau-2={niveau === 2}
@@ -49,14 +54,19 @@
                   >{niveau === 2 ? "Attend preneur" : "En attente"}</span
                 >
               {/if}
-              <CarteTache {carte} />
               <form
                 method="POST"
                 action="?/piocher"
                 use:enhance={avecRetour("C'est dans ta main ✋")}
               >
                 <input type="hidden" name="carte" value={carte.id} />
-                <button type="submit" class="piocher">Piocher</button>
+                <button
+                  type="submit"
+                  class="zone-carte"
+                  aria-label={`Piocher ${carte.tache}`}
+                >
+                  <CarteTache {carte} />
+                </button>
               </form>
             </li>
           {/each}
@@ -129,19 +139,16 @@
     font-weight: 800;
   }
 
-  .piocher {
+  .zone-carte {
+    display: block;
     width: 100%;
-    min-height: 44px;
+    padding: 0;
     border: none;
-    border-radius: 999px;
-    background: var(--texte);
-    color: var(--fond);
+    background: none;
     font: inherit;
-    font-weight: 700;
-  }
-
-  .piocher:disabled {
-    opacity: 0.45;
+    text-align: left;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
   }
 
   @keyframes respire {
