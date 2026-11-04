@@ -1,38 +1,50 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
-  import { avecRetour } from "$lib/formulaire";
+  import { duree } from "$lib/animations";
   import Balance from "$lib/components/Balance.svelte";
-  import CarteTache from "$lib/components/Carte.svelte";
+  import CarteAvecActions from "$lib/components/CarteAvecActions.svelte";
   import Echanges from "$lib/components/Echanges.svelte";
   import { separerMain } from "$lib/main";
+  import { flip } from "svelte/animate";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
 
   const main = $derived(separerMain(data.maMain));
 
+  // Une seule carte affiche ses actions à la fois ; toucher ailleurs les referme.
+  let carteOuverte = $state<string | null>(null);
+
+  function fermerSiAilleurs(event: PointerEvent) {
+    if (!(event.target as Element).closest(".emplacement")) carteOuverte = null;
+  }
+
   const sections = $derived([
     {
       titre: "À faire",
       cartes: main.aFaire,
       vide: "Plus rien à faire. Bravo !",
-      action: { faite: "oui", libelle: "Fait !" },
     },
     {
       titre: "Retournées",
       cartes: main.retournees,
       vide: "Aucune carte retournée pour l'instant.",
-      action: { faite: "non", libelle: "Remettre à faire" },
     },
   ]);
 </script>
+
+<svelte:document
+  onpointerdown={fermerSiAilleurs}
+  onkeydown={(e) => e.key === "Escape" && (carteOuverte = null)}
+/>
 
 <svelte:head>
   <title>Ma main · Atout faire</title>
 </svelte:head>
 
 <h1>Ma main</h1>
-<p class="aide">Les cartes que tu as prises cette semaine.</p>
+<p class="aide">
+  Les cartes que tu as prises cette semaine. Touche une carte pour agir.
+</p>
 
 {#if data.semaineFinie}
   <p class="semaine-finie" role="status">
@@ -54,51 +66,14 @@
     {:else}
       <ul class="grille">
         {#each section.cartes as carte (carte.id)}
-          <li class="emplacement">
-            <CarteTache {carte} />
-            <form
-              method="POST"
-              action="?/retourner"
-              use:enhance={avecRetour(
-                section.action.faite === "oui"
-                  ? "Bien joué ✓"
-                  : "Carte remise à faire",
-              )}
-            >
-              <input type="hidden" name="carte" value={carte.id} />
-              <input type="hidden" name="faite" value={section.action.faite} />
-              <button
-                type="submit"
-                class="action"
-                class:secondaire={section.action.faite === "non"}
-              >
-                {section.action.libelle}
-              </button>
-            </form>
-            {#if !carte.retournee && !data.engagees.includes(carte.id)}
-              <form
-                method="POST"
-                action="?/proposerEchange"
-                use:enhance={avecRetour("Échange proposé ⇄")}
-              >
-                <input type="hidden" name="carte" value={carte.id} />
-                <button type="submit" class="action secondaire"
-                  >Proposer un échange</button
-                >
-              </form>
-            {/if}
-            {#if !carte.retournee}
-              <form
-                method="POST"
-                action="?/remettreAuMarche"
-                use:enhance={avecRetour("Carte repartie sur le Marché")}
-              >
-                <input type="hidden" name="carte" value={carte.id} />
-                <button type="submit" class="action secondaire"
-                  >Remettre au Marché</button
-                >
-              </form>
-            {/if}
+          <li class="emplacement" animate:flip={{ duration: duree(250) }}>
+            <CarteAvecActions
+              {carte}
+              peutEchanger={!data.engagees.includes(carte.id)}
+              ouverte={carteOuverte === carte.id}
+              basculer={() =>
+                (carteOuverte = carteOuverte === carte.id ? null : carte.id)}
+            />
           </li>
         {/each}
       </ul>
@@ -133,29 +108,6 @@
     color: #3a7a35;
     font-weight: 800;
     text-align: center;
-  }
-
-  .emplacement {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .action {
-    width: 100%;
-    min-height: 44px;
-    border: none;
-    border-radius: 999px;
-    background: var(--texte);
-    color: var(--fond);
-    font: inherit;
-    font-weight: 700;
-  }
-
-  .action.secondaire {
-    background: transparent;
-    color: var(--texte);
-    text-decoration: underline;
   }
 
   .grille {

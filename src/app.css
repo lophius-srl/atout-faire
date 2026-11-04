@@ -101,6 +101,7 @@ button[data-envoi]::after {
 /* Boutons clairs : indicateur foncé. */
 .secondaire,
 .refuser,
+.zone-carte,
 .gout {
   --indicateur: var(--texte);
 }
