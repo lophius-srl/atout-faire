@@ -1,14 +1,17 @@
 <script lang="ts">
-  import { MARCHE_DEMO } from "$lib/cartes-demo";
+  import { resolve } from "$app/paths";
   import CarteTache from "$lib/components/Carte.svelte";
   import { organiserMarche } from "$lib/marche";
+  import type { PageData } from "./$types";
 
-  const marche = organiserMarche(MARCHE_DEMO);
+  let { data }: { data: PageData } = $props();
 
-  const sections = [
+  const marche = $derived(organiserMarche(data.auMarche));
+
+  const sections = $derived([
     { titre: "Aujourd'hui", cartes: marche.duJour },
     { titre: "Cette semaine", cartes: marche.deLaSemaine },
-  ];
+  ]);
 </script>
 
 <svelte:head>
@@ -16,30 +19,37 @@
 </svelte:head>
 
 <h1>Le Marché</h1>
-<p class="aide">
-  Les cartes qui attendent preneur. Pioche celles que tu prends.
-</p>
+{#if data.auMarche.length === 0}
+  <p class="aide">
+    Le Marché est vide. Les cartes arrivent à partir des tâches du
+    <a href={resolve("/deck")}>deck</a>.
+  </p>
+{:else}
+  <p class="aide">
+    Les cartes qui attendent preneur. Pioche celles que tu prends.
+  </p>
 
-{#each sections as section (section.titre)}
-  <section>
-    <h2>{section.titre}</h2>
-    {#if section.cartes.length === 0}
-      <p class="vide">Rien à prendre ici.</p>
-    {:else}
-      <ul class="grille">
-        {#each section.cartes as { carte, enAttente } (carte.id)}
-          <li class="emplacement" class:en-attente={enAttente}>
-            {#if enAttente}
-              <span class="badge">En attente</span>
-            {/if}
-            <CarteTache {carte} />
-            <button type="button" class="piocher" disabled>Piocher</button>
-          </li>
-        {/each}
-      </ul>
-    {/if}
-  </section>
-{/each}
+  {#each sections as section (section.titre)}
+    <section>
+      <h2>{section.titre}</h2>
+      {#if section.cartes.length === 0}
+        <p class="vide">Rien à prendre ici.</p>
+      {:else}
+        <ul class="grille">
+          {#each section.cartes as { carte, enAttente } (carte.id)}
+            <li class="emplacement" class:en-attente={enAttente}>
+              {#if enAttente}
+                <span class="badge">En attente</span>
+              {/if}
+              <CarteTache {carte} />
+              <button type="button" class="piocher" disabled>Piocher</button>
+            </li>
+          {/each}
+        </ul>
+      {/if}
+    </section>
+  {/each}
+{/if}
 
 <style>
   h1 {

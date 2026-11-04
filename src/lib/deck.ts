@@ -13,9 +13,11 @@ export interface Tache {
   jours: number[] | null;
   penibilite: Penibilite;
   fixePour: string | null;
+  /** Instant de création (ISO), pour ne pas distribuer de cartes avant. */
+  creeLe: string;
 }
 
-export type SaisieTache = Omit<Tache, "id">;
+export type SaisieTache = Omit<Tache, "id" | "creeLe">;
 
 export type ResultatSaisie =
   { ok: true; tache: SaisieTache } | { ok: false; erreur: string };

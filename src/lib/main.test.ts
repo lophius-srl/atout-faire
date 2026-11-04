@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Carte } from "./cartes";
-import { separerMain } from "./main";
+import { poidsDesMains, separerMain } from "./main";
 
 function carte(id: string, retournee: boolean): Carte {
   return {
@@ -26,5 +26,17 @@ describe("ma main", () => {
 
   it("gère une main vide", () => {
     expect(separerMain([])).toEqual({ aFaire: [], retournees: [] });
+  });
+});
+
+describe("poids des mains", () => {
+  it("additionne la pénibilité des cartes de chacun, sans compter le Marché", () => {
+    const cartes = [
+      { detenteur: "moi", penibilite: 2 },
+      { detenteur: "moi", penibilite: 3 },
+      { detenteur: "autre", penibilite: 1 },
+      { detenteur: null, penibilite: 3 },
+    ];
+    expect(poidsDesMains(cartes, "moi")).toEqual({ moi: 5, autre: 1 });
   });
 });
