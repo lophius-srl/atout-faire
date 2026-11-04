@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { Carte } from "./cartes";
-import { poidsDesMains, separerMain } from "./main";
+import { poidsDesMains, semaineFinie, separerMain } from "./main";
 
 function carte(id: string, retournee: boolean): Carte {
   return {
@@ -38,5 +38,21 @@ describe("poids des mains", () => {
       { detenteur: null, penibilite: 3 },
     ];
     expect(poidsDesMains(cartes, "moi")).toEqual({ moi: 5, autre: 1 });
+  });
+});
+
+describe("semaine finie", () => {
+  it("est finie quand toutes les cartes sont retournées", () => {
+    expect(semaineFinie([{ retournee: true }, { retournee: true }])).toBe(true);
+  });
+
+  it("n'est pas finie tant qu'une carte reste à faire", () => {
+    expect(semaineFinie([{ retournee: true }, { retournee: false }])).toBe(
+      false,
+    );
+  });
+
+  it("n'est pas finie quand il n'y a encore aucune carte", () => {
+    expect(semaineFinie([])).toBe(false);
   });
 });

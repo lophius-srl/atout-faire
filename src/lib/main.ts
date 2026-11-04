@@ -29,3 +29,10 @@ export function poidsDesMains(
   }
   return { moi: poidsMoi, autre: poidsAutre };
 }
+
+/** La semaine est finie quand il y a des cartes et qu'elles sont toutes retournées. */
+export function semaineFinie(
+  cartes: readonly { retournee: boolean }[],
+): boolean {
+  return cartes.length > 0 && cartes.every((carte) => carte.retournee);
+}
