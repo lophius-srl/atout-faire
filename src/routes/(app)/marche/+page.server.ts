@@ -1,7 +1,6 @@
-import {
-  aujourdhuiPourLeFoyer,
-  listerCartesDeLaSemaine,
-} from "$lib/server/cartes";
+import { dateDansFuseau, heureDansFuseau } from "$lib/distribution";
+import { niveauAttente } from "$lib/marche";
+import { listerCartesDeLaSemaine } from "$lib/server/cartes";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
@@ -9,16 +8,24 @@ import type { Actions, PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   depends(DEPENDANCE_CARTES);
   const { foyer } = await parent();
-  const aujourdhui = aujourdhuiPourLeFoyer(foyer.fuseau);
-  const cartes = await listerCartesDeLaSemaine(locals.supabase, aujourdhui);
+  const instant = new Date();
+  const maintenant = {
+    date: dateDansFuseau(instant, foyer.fuseau),
+    heure: heureDansFuseau(instant, foyer.fuseau),
+  };
+  const cartes = await listerCartesDeLaSemaine(
+    locals.supabase,
+    maintenant.date,
+  );
   return {
     auMarche: cartes
       .filter((c) => c.detenteur === null && !c.carte.retournee)
       .map((c) => ({
         carte: c.carte,
-        // Une carte d'un jour déjà passé attend toujours preneur.
-        enAttente:
-          c.carte.echeance.type === "jour" && c.dateEcheance < aujourdhui,
+        niveau: niveauAttente(
+          { echeance: c.carte.echeance.type, dateEcheance: c.dateEcheance },
+          maintenant,
+        ),
       })),
   };
 };

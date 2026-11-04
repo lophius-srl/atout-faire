@@ -81,3 +81,13 @@ export function cartesAttendues(
   }
   return cartes;
 }
+
+/** L'heure (0 à 23) dans le fuseau du foyer. */
+export function heureDansFuseau(instant: Date, fuseau: string): number {
+  const heure = new Intl.DateTimeFormat("en-GB", {
+    timeZone: fuseau,
+    hour: "numeric",
+    hourCycle: "h23",
+  }).format(instant);
+  return Number(heure);
+}
