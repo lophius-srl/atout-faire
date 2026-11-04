@@ -70,6 +70,7 @@
       role="group"
       aria-label={`Actions pour ${carte.tache}`}
     >
+      <p class="titre" aria-hidden="true">{carte.tache}</p>
       {#each actions as { action, faite, libelle, message } (action + faite)}
         <form
           method="POST"
