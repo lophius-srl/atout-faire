@@ -13,3 +13,7 @@ indent_style = tab
 
 [*.{py,go}]
 indent_size = 4
+
+# Code de l'app : tabulations, comme Prettier
+[*.{svelte,ts,js,json,css,html}]
+indent_style = tab

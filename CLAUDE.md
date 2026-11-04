@@ -1,12 +1,14 @@
 # CLAUDE.md — Règles du projet
 
 > Ce fichier est lu automatiquement par Claude Code (en local et dans GitHub Actions).
-> Complète les sections marquées `TODO` au démarrage de chaque nouveau projet.
 
 ## Le projet
-- **Nom** : TODO
-- **But** : TODO (1–2 phrases : quel problème, pour qui)
-- **Stack** : TODO (langage, framework, base de données, hébergement)
+- **Nom** : Atout faire
+- **But** : répartir les tâches de la maison entre deux personnes, sous forme de cartes à piocher sur un « Marché » commun,
+  avec une balance qui garde l'équilibre. Pensé pour un couple, sur téléphone.
+- **Stack** : SvelteKit (Svelte 5, TypeScript) en web app installable (PWA), Supabase (Postgres, auth, temps réel),
+  hébergé sur Vercel. Tests : Vitest. Qualité : ESLint, Prettier, svelte-check.
+- **Règles du jeu et style** : document « Atout faire — règles et style » (Claude Docs).
 - **Décisions d'architecture** : voir `docs/adr/`
 
 ## Commandes (toujours passer par le Makefile)
@@ -34,7 +36,14 @@ La CI exécute exactement `make lint test build`. Si ça passe en local, ça pas
 - Noms explicites, fonctions courtes, pas de code mort ni de `console.log`/`print` de debug.
 - Pas de secrets dans le code : variables d'environnement + `.env.example` tenu à jour.
 - Toute décision technique structurante → un ADR dans `docs/adr/`.
-- TODO : ajouter les conventions propres à la stack (style, structure des dossiers…).
+- Svelte 5 en mode runes (`$state`, `$derived`, `$props`), TypeScript partout.
+- Logique métier (balance, distribution des cartes, échanges…) en TypeScript pur dans `src/lib/`,
+  testée avec Vitest (`*.spec.ts` à côté du fichier). Les composants restent minces.
+- Structure : `src/routes/` (pages), `src/lib/components/` (composants), `src/lib/` (logique, client Supabase),
+  `src/lib/illustrations/` (SVG des cartes), `supabase/migrations/` (schéma SQL).
+- Accès aux données : toujours protégé par des règles RLS Supabase. Aucune clé `service_role` côté client.
+- Interface en français. Style : couleurs pastel vives, une teinte par catégorie, coins arrondis.
+- Node : version de `.nvmrc`, npm 11 ou plus récent.
 
 ## Équipe d'agents (`.claude/agents/`)
 | Agent | Rôle | Quand l'appeler |

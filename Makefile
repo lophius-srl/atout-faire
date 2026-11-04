@@ -1,32 +1,26 @@
 # Point d'entrée unique pour toutes les commandes du projet.
-# La CI lance `make install lint test build` : remplace les cibles ci-dessous par les vraies commandes de ta stack.
-# (L'agent `architect` le fait pendant le /kickoff.)
-#
-# Exemples :
-#   Node       install: npm ci         lint: npm run lint      test: npm test        build: npm run build
-#   Python     install: pip install -e ".[dev]"  lint: ruff check .  test: pytest    build: python -m build
-#   Go         install: go mod download  lint: go vet ./...    test: go test ./...   build: go build ./...
-#   Flutter    install: flutter pub get  lint: flutter analyze  test: flutter test  build: flutter build web
+# La CI lance `make install lint test build`.
 
 .PHONY: install dev lint format test build deploy
 
 install:
-	@echo "TODO: installer les dépendances"
+	npm ci
 
 dev:
-	@echo "TODO: lancer l'app en local"
+	npm run dev
 
 lint:
-	@echo "TODO: lint"
+	npm run lint
+	npm run check
 
 format:
-	@echo "TODO: formater le code"
+	npm run format
 
 test:
-	@echo "TODO: tests"
+	npm test
 
 build:
-	@echo "TODO: build"
+	npm run build
 
 deploy:
-	@echo "TODO: déploiement (optionnel, voir .github/workflows/deploy.yml)"
+	@echo "Déploiement géré par l'intégration Git de Vercel (production sur main, preview sur chaque PR)."
