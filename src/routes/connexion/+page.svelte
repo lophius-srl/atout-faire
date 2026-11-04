@@ -14,8 +14,8 @@
 
   {#if form?.codeEnvoye}
     <p>
-      Un e-mail est parti vers <strong>{form.email}</strong>. Tape le code qu'il
-      contient, ou touche le lien depuis ce téléphone.
+      Un e-mail est parti vers <strong>{form.email}</strong>. Touche le lien
+      qu'il contient depuis ce téléphone, ou tape le code s'il y en a un.
     </p>
     <form method="POST" action="?/verifier" use:enhance>
       <input type="hidden" name="email" value={form.email} />

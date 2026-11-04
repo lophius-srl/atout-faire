@@ -19,7 +19,8 @@ Les foyers (`foyers`, `membres`) sont protégés par RLS : chacun ne lit que son
 uniquement par les fonctions `creer_foyer()` et `rejoindre_foyer(code)`, qui imposent deux membres au plus.
 
 ## Conséquences
-- Le modèle d'e-mail « Magic Link » de Supabase doit contenir le code (`{{ .Token }}`) et un lien vers `/auth/confirm`.
+- Avec le modèle d'e-mail par défaut de Supabase, seul le lien est envoyé (`/auth/confirm?code=`) : il doit s'ouvrir
+  dans le navigateur qui a demandé l'e-mail. Ajouter le code (`{{ .Token }}`) au modèle exige un SMTP personnalisé.
 - Les migrations SQL sont dans `supabase/migrations/` et testées localement par `make test-db` (Postgres jetable, schéma `auth` simulé).
   Elles s'appliquent pour l'instant à la main dans l'éditeur SQL de Supabase.
 - L'envoi d'e-mails par défaut de Supabase est limité à quelques messages par heure : suffisant pour deux personnes.
