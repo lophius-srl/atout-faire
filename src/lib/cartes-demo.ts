@@ -83,3 +83,27 @@ export const MARCHE_DEMO: readonly CarteAuMarche[] = [
   { carte: CARTES_DEMO[3], enAttente: false },
   { carte: CARTES_DEMO[1], enAttente: true },
 ];
+
+/** Main fictive pour la maquette : quelques cartes prises, dont certaines déjà retournées. */
+export const MAIN_DEMO: readonly Carte[] = [
+  CARTES_DEMO[2],
+  CARTES_DEMO[5],
+  CARTES_DEMO[4],
+  {
+    id: "petit-dej-mardi",
+    tache: "Petit-déjeuner",
+    categorie: "cuisine",
+    echeance: { type: "jour", jour: "mardi" },
+    retournee: true,
+  },
+  {
+    id: "rendez-vous-semaine",
+    tache: "Prendre RDV médecin",
+    categorie: "admin",
+    echeance: { type: "semaine" },
+    retournee: true,
+  },
+];
+
+/** Poids fictifs de la semaine, pour montrer la balance qui penche. */
+export const POIDS_DEMO = { moi: 7, autre: 5 } as const;
