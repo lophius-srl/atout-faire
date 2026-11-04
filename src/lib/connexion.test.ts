@@ -7,6 +7,7 @@ import {
   normaliserCodeConnexion,
   normaliserCodeInvitation,
   normaliserEmail,
+  redirectionLienConnexion,
 } from "./connexion";
 
 describe("e-mail", () => {
@@ -58,5 +59,25 @@ describe("écran requis", () => {
 
   it("laisse passer un utilisateur connecté qui a un foyer", () => {
     expect(ecranRequis({ connecte: true, aUnFoyer: true })).toBeNull();
+  });
+});
+
+describe("lien de connexion arrivé sur l'accueil", () => {
+  it("est transmis à /auth/confirm avec ses paramètres", () => {
+    const params = new URLSearchParams("code=dfcd4b19-9cdd");
+    expect(redirectionLienConnexion(params)).toBe(
+      "/auth/confirm?code=dfcd4b19-9cdd",
+    );
+  });
+
+  it("transmet aussi le format token_hash", () => {
+    const params = new URLSearchParams("token_hash=abc&type=email");
+    expect(redirectionLienConnexion(params)).toBe(
+      "/auth/confirm?token_hash=abc&type=email",
+    );
+  });
+
+  it("ne fait rien pour une visite normale de l'accueil", () => {
+    expect(redirectionLienConnexion(new URLSearchParams())).toBeNull();
   });
 });

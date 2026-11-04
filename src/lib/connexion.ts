@@ -34,3 +34,16 @@ export function ecranRequis(etat: {
   }
   return etat.aUnFoyer ? null : "/foyer";
 }
+
+/**
+ * Supabase renvoie vers l'accueil (Site URL) quand l'adresse de retour n'est pas autorisée.
+ * Si l'accueil reçoit un lien de connexion, on le transmet à /auth/confirm.
+ */
+export function redirectionLienConnexion(
+  params: URLSearchParams,
+): string | null {
+  if (!params.has("code") && !params.has("token_hash")) {
+    return null;
+  }
+  return `/auth/confirm?${params.toString()}`;
+}
