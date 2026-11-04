@@ -2,6 +2,7 @@
   import { enhance } from "$app/forms";
   import { duree } from "$lib/animations";
   import { avecRetour } from "$lib/formulaire";
+  import { DEPENDANCE_CARTES } from "$lib/temps-reel";
   import { resolve } from "$app/paths";
   import CarteTache from "$lib/components/Carte.svelte";
   import { organiserMarche } from "$lib/marche";
@@ -57,7 +58,9 @@
               <form
                 method="POST"
                 action="?/piocher"
-                use:enhance={avecRetour("C'est dans ta main ✋")}
+                use:enhance={avecRetour("C'est dans ta main ✋", {
+                  recharger: DEPENDANCE_CARTES,
+                })}
               >
                 <input type="hidden" name="carte" value={carte.id} />
                 <button

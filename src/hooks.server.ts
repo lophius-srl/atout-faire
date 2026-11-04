@@ -7,10 +7,12 @@ export const handle: Handle = async ({ event, resolve }) => {
   event.locals.supabase = supabase;
 
   // getClaims vérifie le jeton de session : on ne se fie jamais au seul cookie.
-  event.locals.utilisateurConnecte = async () => {
-    const { data } = await supabase.auth.getClaims();
-    return data ? { id: data.claims.sub } : null;
-  };
+  // La vérification est faite une seule fois par requête, même si plusieurs chargements la demandent.
+  let verification: Promise<{ id: string } | null> | undefined;
+  event.locals.utilisateurConnecte = () =>
+    (verification ??= supabase.auth
+      .getClaims()
+      .then(({ data }) => (data ? { id: data.claims.sub } : null)));
 
   const reponse = await resolve(event, {
     filterSerializedResponseHeaders: (nom) =>
