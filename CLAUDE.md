@@ -1,12 +1,13 @@
 # CLAUDE.md — Règles du projet
 
-> Ce fichier est lu automatiquement par Claude Code (en local et dans GitHub Actions).
-> Complète les sections marquées `TODO` au démarrage de chaque nouveau projet.
-
 ## Le projet
-- **Nom** : TODO
-- **But** : TODO (1–2 phrases : quel problème, pour qui)
-- **Stack** : TODO (langage, framework, base de données, hébergement)
+- **Nom** : Atout faire
+- **But** : répartir équitablement les tâches de la maison entre deux parents, sous forme de cartes
+  qu'on pioche quand on veut, qu'on s'échange, et qu'on retourne une fois faites. Une carte par tâche et par jour.
+  Le seul but est de finir les tâches : **pas de points, de récompenses ni de classement**.
+- **Utilisateurs** : un couple, deux iPhone (PWA installée depuis Safari), interface en français.
+- **Stack** : TypeScript, pnpm, **SvelteKit 5** (runes) + PWA, hébergé sur **Vercel** (Hobby),
+  **Supabase** (Free) pour la base Postgres, la connexion et le temps réel. Tests **Vitest**, ESLint + Prettier (ADR 0002).
 - **Décisions d'architecture** : voir `docs/adr/`
 
 ## Commandes (toujours passer par le Makefile)
@@ -51,7 +52,18 @@ Pour rester un usage « humain » :
 - Noms explicites, fonctions courtes, pas de code mort ni de `console.log`/`print` de debug.
 - Pas de secrets dans le code : variables d'environnement + `.env.example` tenu à jour.
 - Toute décision technique structurante → un ADR dans `docs/adr/`.
-- TODO : ajouter les conventions propres à la stack (style, structure des dossiers…).
+- Structure :
+  - `src/lib/` : logique métier pure (cartes du jour, marché, échanges, balance), sans I/O, testée unitairement
+    à côté du code (`*.test.ts`).
+  - `src/lib/server/` (à venir) : accès Supabase côté serveur.
+  - `src/routes/` : pages SvelteKit (une page par écran : ma main, la table, le marché, le deck).
+  - `src/service-worker.ts` : cache de l'app et, plus tard, notifications push.
+  - `static/` : manifest PWA et icônes.
+- TypeScript `strict` ; pas de `any` ; Svelte 5 avec les runes (`$state`, `$derived`, `$props`).
+- Noms du domaine en français, comme dans l'app : `carte`, `main`, `marche`, `echange`, `balance`.
+- UI pensée pour iPhone d'abord (largeur 375 px, zones tactiles d'au moins 44 px, `safe-area-inset`).
+- Variables publiques préfixées `PUBLIC_` (SvelteKit) ; secrets dans `.env` local et dans les réglages Vercel.
+- Dépendances : versions exactes une fois le lockfile en place, mises à jour via Dependabot.
 
 ## Équipe d'agents (`.claude/agents/`)
 | Agent | Rôle | Quand l'appeler |
