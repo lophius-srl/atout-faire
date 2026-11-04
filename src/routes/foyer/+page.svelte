@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import { resolve } from "$app/paths";
   import type { ActionData, PageData } from "./$types";
 
@@ -26,10 +27,18 @@
     <a class="bouton-principal" href={resolve("/marche")}>Aller au Marché</a>
   {:else}
     <p>Crée votre foyer, ou rejoins celui de l'autre parent avec son code.</p>
-    <form method="POST" action="?/creer" use:enhance>
+    <form
+      method="POST"
+      action="?/creer"
+      use:enhance={avecRetour(undefined, { erreursDansLaPage: true })}
+    >
       <button type="submit" class="bouton-principal">Créer notre foyer</button>
     </form>
-    <form method="POST" action="?/rejoindre" use:enhance>
+    <form
+      method="POST"
+      action="?/rejoindre"
+      use:enhance={avecRetour(undefined, { erreursDansLaPage: true })}
+    >
       <label for="code">Code d'invitation</label>
       <input
         id="code"

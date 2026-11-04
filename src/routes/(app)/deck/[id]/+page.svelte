@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import { resolve } from "$app/paths";
   import FormulaireTache from "$lib/components/FormulaireTache.svelte";
   import type { ActionData, PageData } from "./$types";
@@ -34,7 +35,7 @@
   method="POST"
   action="?/supprimer"
   onsubmit={confirmerSuppression}
-  use:enhance
+  use:enhance={avecRetour("Tâche supprimée")}
 >
   <button type="submit" class="supprimer">Supprimer cette tâche</button>
 </form>

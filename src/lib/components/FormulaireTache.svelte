@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import { untrack } from "svelte";
   import { JOURS } from "$lib/cartes";
   import { CATEGORIES } from "$lib/categories";
@@ -21,7 +22,12 @@
   let frequence = $state(untrack(() => tache.frequence));
 </script>
 
-<form method="POST" action="?/enregistrer" class="formulaire" use:enhance>
+<form
+  method="POST"
+  action="?/enregistrer"
+  class="formulaire"
+  use:enhance={avecRetour("Tâche enregistrée", { erreursDansLaPage: true })}
+>
   <label for="nom">Nom de la tâche</label>
   <input id="nom" name="nom" value={tache.nom} maxlength={NOM_MAX} required />
 

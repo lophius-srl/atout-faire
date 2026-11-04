@@ -1,11 +1,12 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import { resolve } from "$app/paths";
   import { trouverCategorie } from "$lib/categories";
   import { GOUT_PAR_DEFAUT, GOUTS } from "$lib/gouts";
-  import type { ActionData, PageData } from "./$types";
+  import type { PageData } from "./$types";
 
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  let { data }: { data: PageData } = $props();
 </script>
 
 <svelte:head>
@@ -18,10 +19,6 @@
   Dis ce que tu aimes faire ou pas : la balance en tiendra compte. Tes goûts
   restent privés.
 </p>
-
-{#if form?.erreur}
-  <p class="message-erreur" role="alert">{form.erreur}</p>
-{/if}
 
 {#if data.taches.length === 0}
   <p class="aide">Ajoute d'abord des tâches dans le deck.</p>
@@ -36,7 +33,12 @@
         style:--encre={categorie.encre}
       >
         <span class="nom">{tache.nom}</span>
-        <form method="POST" action="?/choisir" class="choix" use:enhance>
+        <form
+          method="POST"
+          action="?/choisir"
+          class="choix"
+          use:enhance={avecRetour("Goût enregistré")}
+        >
           <input type="hidden" name="tache" value={tache.id} />
           {#each GOUTS as gout (gout.id)}
             <button

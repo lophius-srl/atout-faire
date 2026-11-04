@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import { trouverCategorie, type CategorieId } from "$lib/categories";
   import type { Reponse } from "$lib/echanges";
 
@@ -60,7 +61,7 @@
             method="POST"
             action="?/repondreEchange"
             class="reponse"
-            use:enhance
+            use:enhance={avecRetour("Réponse envoyée")}
           >
             <input type="hidden" name="echange" value={echange.id} />
             {#if echange.reponses.some((r) => r.demandeUneCarte)}

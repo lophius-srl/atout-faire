@@ -72,3 +72,47 @@ body {
   color: #a4482a;
   font-weight: 700;
 }
+
+/* Envoi en cours : pas de double toucher, et un indicateur sur le bouton touché. */
+form[aria-busy="true"] button {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+button[data-envoi] {
+  position: relative;
+  color: transparent !important;
+}
+
+button[data-envoi]::after {
+  content: "";
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 18px;
+  height: 18px;
+  margin: -9px 0 0 -9px;
+  border: 3px solid;
+  border-color: var(--indicateur, var(--fond)) var(--indicateur, var(--fond))
+    transparent;
+  border-radius: 50%;
+  animation: tourne 0.7s linear infinite;
+}
+
+/* Boutons clairs : indicateur foncé. */
+.secondaire,
+.refuser,
+.gout {
+  --indicateur: var(--texte);
+}
+
+@keyframes tourne {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  button[data-envoi]::after {
+    animation-duration: 2s;
+  }
+}
