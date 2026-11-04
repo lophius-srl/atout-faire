@@ -1,5 +1,6 @@
 <script lang="ts">
   import { invalidate } from "$app/navigation";
+  import BarreHaut from "$lib/components/BarreHaut.svelte";
   import NavigationBas from "$lib/components/NavigationBas.svelte";
   import { DEPENDANCE_CARTES, ecouterCartes } from "$lib/temps-reel";
   import type { Snippet } from "svelte";
@@ -20,6 +21,11 @@
 
 <svelte:document onvisibilitychange={auRetourSurLApp} />
 
+<BarreHaut
+  codeInvitation={data.foyer.codeInvitation}
+  nombreDeMembres={data.foyer.nombreDeMembres}
+/>
+
 <div class="ecran">
   {@render children()}
 </div>
@@ -30,6 +36,6 @@
   .ecran {
     max-width: 480px;
     margin: 0 auto;
-    padding: 24px 0 calc(96px + env(safe-area-inset-bottom));
+    padding: 12px 0 calc(96px + env(safe-area-inset-bottom));
   }
 </style>
