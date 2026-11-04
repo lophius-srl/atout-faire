@@ -19,6 +19,7 @@
     {/each}
   </ul>
 
+  <a class="lien" href={resolve("/marche")}>Ouvrir le Marché</a>
   <a class="lien" href={resolve("/demo/cartes")}>Voir les cartes</a>
 </main>
 
@@ -48,7 +49,7 @@
   }
 
   .lien {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     min-height: 44px;
     color: var(--texte);

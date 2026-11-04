@@ -1,4 +1,5 @@
 import type { Carte } from "./cartes";
+import type { CarteAuMarche } from "./marche";
 
 /** Cartes fictives pour la maquette, en attendant les vraies données. */
 export const CARTES_DEMO: readonly Carte[] = [
@@ -44,4 +45,41 @@ export const CARTES_DEMO: readonly Carte[] = [
     echeance: { type: "jour", jour: "jeudi" },
     retournee: false,
   },
+];
+
+/** Marché fictif d'un mardi soir, pour la maquette. */
+export const MARCHE_DEMO: readonly CarteAuMarche[] = [
+  {
+    carte: {
+      id: "linge-mardi",
+      tache: "Étendre le linge",
+      categorie: "maison",
+      echeance: { type: "jour", jour: "mardi" },
+      retournee: false,
+    },
+    enAttente: false,
+  },
+  { carte: CARTES_DEMO[0], enAttente: true },
+  {
+    carte: {
+      id: "repas-mardi",
+      tache: "Repas du soir",
+      categorie: "cuisine",
+      echeance: { type: "jour", jour: "mardi" },
+      retournee: false,
+    },
+    enAttente: false,
+  },
+  {
+    carte: {
+      id: "histoire-mardi",
+      tache: "Histoire du soir",
+      categorie: "enfants",
+      echeance: { type: "jour", jour: "mardi" },
+      retournee: false,
+    },
+    enAttente: false,
+  },
+  { carte: CARTES_DEMO[3], enAttente: false },
+  { carte: CARTES_DEMO[1], enAttente: true },
 ];
