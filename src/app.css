@@ -25,3 +25,50 @@ body {
   background: var(--fond);
   padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
 }
+
+/* Formulaires (connexion, foyer) */
+.page-formulaire {
+  max-width: 420px;
+  margin: 0 auto;
+  padding-top: 48px;
+}
+
+.page-formulaire form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.page-formulaire label {
+  font-weight: 700;
+}
+
+.page-formulaire input {
+  min-height: 48px;
+  padding: 0 14px;
+  border: 2px solid #e8ddd5;
+  border-radius: 14px;
+  background: #fff;
+  font: inherit;
+  font-size: 1.1rem;
+}
+
+.bouton-principal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  border: none;
+  border-radius: 999px;
+  background: var(--texte);
+  color: var(--fond);
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.message-erreur {
+  color: #a4482a;
+  font-weight: 700;
+}
