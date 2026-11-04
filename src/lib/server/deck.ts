@@ -57,6 +57,14 @@ export async function ajouterTache(
   return error;
 }
 
+export async function ajouterTaches(
+  supabase: SupabaseClient,
+  taches: SaisieTache[],
+) {
+  const { error } = await supabase.from("taches").insert(taches.map(versLigne));
+  return error;
+}
+
 export async function modifierTache(
   supabase: SupabaseClient,
   id: string,

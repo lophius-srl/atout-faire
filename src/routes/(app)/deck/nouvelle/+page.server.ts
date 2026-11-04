@@ -1,11 +1,17 @@
 import { lireSaisieTache } from "$lib/deck";
-import { ajouterTache, listerParents } from "$lib/server/deck";
+import { MODELES, modelesDisponibles, trouverModele } from "$lib/modeles";
+import { ajouterTache, listerParents, listerTaches } from "$lib/server/deck";
 import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, url }) => {
   const moi = (await locals.utilisateurConnecte())?.id ?? "";
-  return { parents: await listerParents(locals.supabase, moi) };
+  const deck = await listerTaches(locals.supabase);
+  return {
+    parents: await listerParents(locals.supabase, moi),
+    idees: modelesDisponibles(MODELES, deck),
+    modele: trouverModele(url.searchParams.get("modele") ?? "") ?? null,
+  };
 };
 
 export const actions: Actions = {
