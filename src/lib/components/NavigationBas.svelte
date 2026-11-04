@@ -6,7 +6,6 @@
     { href: resolve("/marche"), libelle: "Marché", icone: "🃏" },
     { href: resolve("/ma-main"), libelle: "Ma main", icone: "✋" },
     { href: resolve("/deck"), libelle: "Deck", icone: "🗂️" },
-    { href: resolve("/foyer"), libelle: "Foyer", icone: "🏠" },
   ];
 </script>
 
