@@ -1,11 +1,12 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import { resolve } from "$app/paths";
   import CarteTache from "$lib/components/Carte.svelte";
   import { organiserMarche } from "$lib/marche";
-  import type { ActionData, PageData } from "./$types";
+  import type { PageData } from "./$types";
 
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  let { data }: { data: PageData } = $props();
 
   const marche = $derived(organiserMarche(data.auMarche));
 
@@ -20,11 +21,6 @@
 </svelte:head>
 
 <h1>Le Marché</h1>
-{#if form?.erreur}
-  <p class="message-erreur" role="alert">{form.erreur}</p>
-{:else if form?.piochee}
-  <p class="confirmation" role="status">C'est dans ta main ✋</p>
-{/if}
 {#if data.auMarche.length === 0}
   <p class="aide">
     Le Marché est vide. Les cartes arrivent à partir des tâches du
@@ -54,7 +50,11 @@
                 >
               {/if}
               <CarteTache {carte} />
-              <form method="POST" action="?/piocher" use:enhance>
+              <form
+                method="POST"
+                action="?/piocher"
+                use:enhance={avecRetour("C'est dans ta main ✋")}
+              >
                 <input type="hidden" name="carte" value={carte.id} />
                 <button type="submit" class="piocher">Piocher</button>
               </form>
@@ -127,11 +127,6 @@
     color: #4a2a0c;
     font-size: 0.72rem;
     font-weight: 800;
-  }
-
-  .confirmation {
-    color: #3a7a35;
-    font-weight: 700;
   }
 
   .piocher {

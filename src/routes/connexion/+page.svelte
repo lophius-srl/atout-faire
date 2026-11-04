@@ -1,5 +1,6 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import type { ActionData, PageData } from "./$types";
 
   let { data, form }: { data: PageData; form: ActionData } = $props();
@@ -17,7 +18,11 @@
       Un e-mail est parti vers <strong>{form.email}</strong>. Touche le lien
       qu'il contient depuis ce téléphone, ou tape le code s'il y en a un.
     </p>
-    <form method="POST" action="?/verifier" use:enhance>
+    <form
+      method="POST"
+      action="?/verifier"
+      use:enhance={avecRetour(undefined, { erreursDansLaPage: true })}
+    >
       <input type="hidden" name="email" value={form.email} />
       <label for="code">Code reçu par e-mail</label>
       <input
@@ -29,7 +34,11 @@
       />
       <button type="submit" class="bouton-principal">Me connecter</button>
     </form>
-    <form method="POST" action="?/envoyer" use:enhance>
+    <form
+      method="POST"
+      action="?/envoyer"
+      use:enhance={avecRetour(undefined, { erreursDansLaPage: true })}
+    >
       <input type="hidden" name="email" value={form.email} />
       <button type="submit" class="secondaire">Renvoyer un e-mail</button>
     </form>
@@ -42,7 +51,11 @@
         Ce lien a expiré. Demande un nouvel e-mail.
       </p>
     {/if}
-    <form method="POST" action="?/envoyer" use:enhance>
+    <form
+      method="POST"
+      action="?/envoyer"
+      use:enhance={avecRetour(undefined, { erreursDansLaPage: true })}
+    >
       <label for="email">Adresse e-mail</label>
       <input
         id="email"

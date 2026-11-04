@@ -1,12 +1,13 @@
 <script lang="ts">
   import { enhance } from "$app/forms";
+  import { avecRetour } from "$lib/formulaire";
   import Balance from "$lib/components/Balance.svelte";
   import CarteTache from "$lib/components/Carte.svelte";
   import Echanges from "$lib/components/Echanges.svelte";
   import { separerMain } from "$lib/main";
-  import type { ActionData, PageData } from "./$types";
+  import type { PageData } from "./$types";
 
-  let { data, form }: { data: PageData; form: ActionData } = $props();
+  let { data }: { data: PageData } = $props();
 
   const main = $derived(separerMain(data.maMain));
 
@@ -38,17 +39,6 @@
     🎉 Toutes les cartes de la semaine sont retournées. La semaine est finie !
   </p>
 {/if}
-{#if form?.erreur}
-  <p class="message-erreur" role="alert">{form.erreur}</p>
-{:else if form?.echangePropose}
-  <p class="confirmation" role="status">
-    Échange proposé : l'autre peut accepter, refuser ou contre-proposer.
-  </p>
-{:else if form?.remise}
-  <p class="confirmation" role="status">
-    La carte est repartie sur le Marché : l'autre peut la prendre.
-  </p>
-{/if}
 
 <Balance poidsMoi={data.poids.moi} poidsAutre={data.poids.autre} />
 
@@ -66,7 +56,15 @@
         {#each section.cartes as carte (carte.id)}
           <li class="emplacement">
             <CarteTache {carte} />
-            <form method="POST" action="?/retourner" use:enhance>
+            <form
+              method="POST"
+              action="?/retourner"
+              use:enhance={avecRetour(
+                section.action.faite === "oui"
+                  ? "Bien joué ✓"
+                  : "Carte remise à faire",
+              )}
+            >
               <input type="hidden" name="carte" value={carte.id} />
               <input type="hidden" name="faite" value={section.action.faite} />
               <button
@@ -78,7 +76,11 @@
               </button>
             </form>
             {#if !carte.retournee && !data.engagees.includes(carte.id)}
-              <form method="POST" action="?/proposerEchange" use:enhance>
+              <form
+                method="POST"
+                action="?/proposerEchange"
+                use:enhance={avecRetour("Échange proposé ⇄")}
+              >
                 <input type="hidden" name="carte" value={carte.id} />
                 <button type="submit" class="action secondaire"
                   >Proposer un échange</button
@@ -86,7 +88,11 @@
               </form>
             {/if}
             {#if !carte.retournee}
-              <form method="POST" action="?/remettreAuMarche" use:enhance>
+              <form
+                method="POST"
+                action="?/remettreAuMarche"
+                use:enhance={avecRetour("Carte repartie sur le Marché")}
+              >
                 <input type="hidden" name="carte" value={carte.id} />
                 <button type="submit" class="action secondaire"
                   >Remettre au Marché</button
@@ -127,11 +133,6 @@
     color: #3a7a35;
     font-weight: 800;
     text-align: center;
-  }
-
-  .confirmation {
-    color: #3a7a35;
-    font-weight: 700;
   }
 
   .emplacement {
