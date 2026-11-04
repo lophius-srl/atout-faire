@@ -42,10 +42,16 @@
         <p class="vide">Rien à prendre ici.</p>
       {:else}
         <ul class="grille">
-          {#each section.cartes as { carte, enAttente } (carte.id)}
-            <li class="emplacement" class:en-attente={enAttente}>
-              {#if enAttente}
-                <span class="badge">En attente</span>
+          {#each section.cartes as { carte, niveau } (carte.id)}
+            <li
+              class="emplacement"
+              class:niveau-1={niveau === 1}
+              class:niveau-2={niveau === 2}
+            >
+              {#if niveau > 0}
+                <span class="badge"
+                  >{niveau === 2 ? "Attend preneur" : "En attente"}</span
+                >
               {/if}
               <CarteTache {carte} />
               <form method="POST" action="?/piocher" use:enhance>
@@ -98,9 +104,15 @@
     border-radius: calc(var(--rayon) + 4px);
   }
 
-  .en-attente {
+  .niveau-1 {
     background: #fff;
     box-shadow: 0 0 0 3px #f6b26b;
+  }
+
+  .niveau-2 {
+    --attente: #e8743b;
+    background: #fff;
+    box-shadow: 0 0 0 4px var(--attente);
     animation: respire 2.4s ease-in-out infinite;
   }
 
@@ -111,8 +123,8 @@
     z-index: 1;
     padding: 2px 10px;
     border-radius: 999px;
-    background: #f6b26b;
-    color: #5c3510;
+    background: var(--attente, #f6b26b);
+    color: #4a2a0c;
     font-size: 0.72rem;
     font-weight: 800;
   }
@@ -139,12 +151,12 @@
 
   @keyframes respire {
     50% {
-      box-shadow: 0 0 0 6px rgb(246 178 107 / 55%);
+      box-shadow: 0 0 0 7px rgb(232 116 59 / 55%);
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .en-attente {
+    .niveau-2 {
       animation: none;
     }
   }
