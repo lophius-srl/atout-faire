@@ -39,6 +39,10 @@
 {/if}
 {#if form?.erreur}
   <p class="message-erreur" role="alert">{form.erreur}</p>
+{:else if form?.remise}
+  <p class="confirmation" role="status">
+    La carte est repartie sur le Marché : l'autre peut la prendre.
+  </p>
 {/if}
 
 <Balance poidsMoi={data.poids.moi} poidsAutre={data.poids.autre} />
@@ -64,6 +68,14 @@
                 {section.action.libelle}
               </button>
             </form>
+            {#if !carte.retournee}
+              <form method="POST" action="?/remettreAuMarche" use:enhance>
+                <input type="hidden" name="carte" value={carte.id} />
+                <button type="submit" class="action secondaire"
+                  >Remettre au Marché</button
+                >
+              </form>
+            {/if}
           </li>
         {/each}
       </ul>
@@ -98,6 +110,11 @@
     color: #3a7a35;
     font-weight: 800;
     text-align: center;
+  }
+
+  .confirmation {
+    color: #3a7a35;
+    font-weight: 700;
   }
 
   .emplacement {
