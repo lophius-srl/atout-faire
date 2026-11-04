@@ -28,7 +28,7 @@ jobs:
     env:
       DEPLOY_HOOK_URL: ${{ secrets.DEPLOY_HOOK_URL }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # --- Option A : service avec "deploy hook" (Render, Railway, Coolify…) ---
       # Crée le secret DEPLOY_HOOK_URL dans Settings → Environments → production.
