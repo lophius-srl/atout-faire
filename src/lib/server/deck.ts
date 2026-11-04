@@ -10,13 +10,15 @@ interface LigneTache {
   jours: number[] | null;
   penibilite: Penibilite;
   fixe_pour: string | null;
+  cree_le: string;
 }
 
-const COLONNES = "id, nom, categorie, frequence, jours, penibilite, fixe_pour";
+const COLONNES =
+  "id, nom, categorie, frequence, jours, penibilite, fixe_pour, cree_le";
 
 function versTache(ligne: LigneTache): Tache {
-  const { fixe_pour, ...reste } = ligne;
-  return { ...reste, fixePour: fixe_pour };
+  const { fixe_pour, cree_le, ...reste } = ligne;
+  return { ...reste, fixePour: fixe_pour, creeLe: cree_le };
 }
 
 function versLigne(tache: SaisieTache) {
