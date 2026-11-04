@@ -19,9 +19,12 @@
   Les tâches de la maison. Chacune donnera des cartes sur le Marché.
 </p>
 
-<a class="bouton-principal" href={resolve("/deck/nouvelle")}
-  >Ajouter une tâche</a
->
+<div class="actions">
+  <a class="bouton-principal" href={resolve("/deck/nouvelle")}
+    >Ajouter une tâche</a
+  >
+  <a class="lien-gouts" href={resolve("/deck/gouts")}>😊 Mes goûts</a>
+</div>
 
 {#if data.taches.length === 0}
   <p class="vide">
@@ -62,6 +65,21 @@
   .aide,
   .vide {
     color: var(--texte-doux);
+  }
+
+  .actions {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .lien-gouts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    color: var(--texte);
+    font-weight: 700;
   }
 
   .liste {
