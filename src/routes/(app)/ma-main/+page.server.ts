@@ -37,4 +37,18 @@ export const actions: Actions = {
       });
     }
   },
+
+  remettreAuMarche: async ({ request, locals }) => {
+    const carte = String((await request.formData()).get("carte") ?? "");
+    const { error } = await locals.supabase.rpc("remettre_au_marche", {
+      carte,
+    });
+    if (error) {
+      return fail(403, {
+        erreur:
+          "Seules les cartes de ta main encore à faire peuvent repartir sur le Marché.",
+      });
+    }
+    return { remise: true };
+  },
 };
