@@ -15,7 +15,15 @@ lancer "'$PG_BIN/initdb' -D '$DOSSIER/data' -U postgres -A trust >/dev/null"
 lancer "'$PG_BIN/pg_ctl' -D '$DOSSIER/data' -o '-p $PORT -k $DOSSIER' -l '$DOSSIER/log' start -w >/dev/null"
 
 psql_test() { psql -h "$DOSSIER" -p "$PORT" -U postgres -v ON_ERROR_STOP=1 -q "$@"; }
-psql_test -f supabase/tests/auth-simule.sql
-for migration in supabase/migrations/*.sql; do psql_test -f "$migration"; done
-for test in supabase/tests/*.test.sql; do psql_test -o /dev/null -f "$test"; done
+
+# Base modèle migrée, puis une copie neuve par fichier de test.
+psql_test -c "create database modele"
+psql_test -d modele -f supabase/tests/auth-simule.sql
+for migration in supabase/migrations/*.sql; do psql_test -d modele -f "$migration"; done
+for test in supabase/tests/*.test.sql; do
+  base=$(basename "$test" .test.sql | tr -c 'a-z0-9\n' '_')
+  psql_test -c "create database $base template modele"
+  psql_test -d "$base" -o /dev/null -f "$test"
+  echo "  ✓ $test"
+done
 echo "✅ Tests de la base : OK"

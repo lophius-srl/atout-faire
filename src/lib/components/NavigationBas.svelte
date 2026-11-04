@@ -5,6 +5,7 @@
   const liens = [
     { href: resolve("/marche"), libelle: "Marché", icone: "🃏" },
     { href: resolve("/ma-main"), libelle: "Ma main", icone: "✋" },
+    { href: resolve("/deck"), libelle: "Deck", icone: "🗂️" },
     { href: resolve("/foyer"), libelle: "Foyer", icone: "🏠" },
   ];
 </script>
@@ -14,7 +15,9 @@
     <a
       href={lien.href}
       class="lien"
-      aria-current={page.url.pathname === lien.href ? "page" : undefined}
+      aria-current={page.url.pathname.startsWith(lien.href)
+        ? "page"
+        : undefined}
     >
       <span class="icone" aria-hidden="true">{lien.icone}</span>
       {lien.libelle}
