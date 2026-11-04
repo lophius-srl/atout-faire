@@ -1,4 +1,5 @@
 import type { Carte } from "./cartes";
+import { facteurGout, type Gout } from "./gouts";
 
 export interface Main {
   aFaire: Carte[];
@@ -13,19 +14,29 @@ export function separerMain(cartes: readonly Carte[]): Main {
   };
 }
 
+/** Poids d'une carte pour son détenteur : pénibilité × goût (aime × 0,5, neutre × 1, n'aime pas × 1,5). */
+export function poidsCarte(penibilite: number, gout: Gout): number {
+  return penibilite * facteurGout(gout);
+}
+
 /**
- * Effort porté par chacun : somme des pénibilités des cartes en main.
- * Les goûts de chacun s'y ajouteront avec la balance complète (#19).
+ * Effort ressenti par chacun sur la semaine : somme du poids des cartes qu'il a prises,
+ * faites ou non. Les cartes du Marché ne comptent pour personne.
  */
 export function poidsDesMains(
-  cartes: readonly { detenteur: string | null; penibilite: number }[],
+  cartes: readonly {
+    detenteur: string | null;
+    penibilite: number;
+    gout: Gout;
+  }[],
   moi: string,
 ): { moi: number; autre: number } {
   let poidsMoi = 0;
   let poidsAutre = 0;
-  for (const { detenteur, penibilite } of cartes) {
-    if (detenteur === moi) poidsMoi += penibilite;
-    else if (detenteur) poidsAutre += penibilite;
+  for (const { detenteur, penibilite, gout } of cartes) {
+    const poids = poidsCarte(penibilite, gout);
+    if (detenteur === moi) poidsMoi += poids;
+    else if (detenteur) poidsAutre += poids;
   }
   return { moi: poidsMoi, autre: poidsAutre };
 }

@@ -1,6 +1,7 @@
 import { JOURS, type Carte } from "$lib/cartes";
 import type { CategorieId } from "$lib/categories";
 import type { Penibilite } from "$lib/deck";
+import type { Gout } from "$lib/gouts";
 import {
   cartesAttendues,
   dateDansFuseau,
@@ -15,6 +16,8 @@ import { listerTaches } from "./deck";
 export interface CarteDuFoyer {
   carte: Carte;
   penibilite: Penibilite;
+  /** Goût du détenteur, figé quand la carte est arrivée dans sa main. */
+  gout: Gout;
   detenteur: string | null;
   dateEcheance: DateLocale;
 }
@@ -28,6 +31,7 @@ interface LigneCarte {
   date_echeance: DateLocale;
   detenteur: string | null;
   retournee: boolean;
+  gout: Gout;
 }
 
 export function aujourdhuiPourLeFoyer(fuseau: string): DateLocale {
@@ -75,6 +79,7 @@ function versCarteDuFoyer(ligne: LigneCarte): CarteDuFoyer {
       retournee: ligne.retournee,
     },
     penibilite: ligne.penibilite,
+    gout: ligne.gout,
     detenteur: ligne.detenteur,
     dateEcheance: ligne.date_echeance,
   };
@@ -87,7 +92,7 @@ export async function listerCartesDeLaSemaine(
   const { data, error } = await supabase
     .from("cartes")
     .select(
-      "id, nom, categorie, penibilite, echeance, date_echeance, detenteur, retournee",
+      "id, nom, categorie, penibilite, echeance, date_echeance, detenteur, retournee, gout",
     )
     .gte("date_echeance", lundiDeLaSemaine(aujourdhui))
     .order("date_echeance")
