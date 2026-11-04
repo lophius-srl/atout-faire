@@ -1,10 +1,5 @@
 export type CategorieId =
-  | "cuisine"
-  | "maison"
-  | "enfants"
-  | "admin"
-  | "courses"
-  | "logistique";
+  "cuisine" | "maison" | "enfants" | "admin" | "courses" | "logistique";
 
 export interface Categorie {
   id: CategorieId;
