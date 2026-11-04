@@ -100,7 +100,8 @@ Si tu préfères le faire à la main :
 > refuse : le kit contient déjà les siens (en français, réservés au propriétaire du repo).
 
 Tu obtiens alors :
-- **Review automatique** de chaque PR (`claude-review.yml`) ;
+- **Review à la demande** dans GitHub (`claude-review.yml`, onglet *Actions* → *Run workflow*) :
+  la review normale se fait en local par l'agent `reviewer`, avant le push ;
 - **`@claude`** dans une issue ou une PR pour lui confier une tâche (`claude.yml`).
   Seuls toi et tes collaborateurs pouvez le déclencher.
 
@@ -190,9 +191,9 @@ Quand tu veux publier une version, merge cette PR : version incrémentée, `CHAN
   ou de lire `.env`.
 
 ## Garder le contrôle des coûts
-- La review automatique tourne à l'ouverture d'une PR, pas à chaque push.
-  Pour une nouvelle review après corrections : onglet *Actions* → *Claude Code Review* → *Run workflow*.
-- Ouvre tes PR en **brouillon** (draft) tant qu'elles ne sont pas prêtes : aucune review n'est lancée.
+- La review GitHub ne tourne qu'à la demande : onglet *Actions* → *Claude Code Review* → *Run workflow*.
+- Les agents travaillent en local et ne poussent qu'une fois par étape (voir « Interactions avec GitHub »
+  dans `CLAUDE.md`) : c'est ce qui évite qu'une journée d'agents ressemble à un robot pour GitHub.
 - En privé, surveille le quota de minutes Actions dans *Settings → Billing*.
 
 ## Dépannage

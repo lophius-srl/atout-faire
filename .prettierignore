@@ -1,0 +1,11 @@
+.svelte-kit
+.vercel
+build
+coverage
+pnpm-lock.yaml
+*.md
+.github
+.claude
+docs
+scripts
+static
