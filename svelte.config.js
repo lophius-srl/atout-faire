@@ -5,7 +5,8 @@ import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 const config = {
   preprocess: vitePreprocess(),
   kit: {
-    adapter: adapter(),
+    // Dublin : la même région que la base Supabase (eu-west-1), pour des échanges rapides.
+    adapter: adapter({ regions: ["dub1"] }),
   },
 };
 

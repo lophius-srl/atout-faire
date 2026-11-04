@@ -1,3 +1,4 @@
+import { invalidate } from "$app/navigation";
 import type { SubmitFunction } from "@sveltejs/kit";
 import { afficherMessage } from "./notifications.svelte";
 import { messageApresAction } from "./retour";
@@ -7,10 +8,15 @@ import { messageApresAction } from "./retour";
  * (boutons grisés, indicateur sur le bouton touché, pas de double envoi),
  * puis un message bref confirme le succès ou explique l'erreur.
  * `erreursDansLaPage` : la page affiche déjà ses erreurs à côté des champs, on ne les répète pas.
+ * `recharger` : clé de dépendance à recharger après l'action (ex. les cartes), plutôt que
+ * de recharger toute la page — le foyer et la distribution des cartes n'ont pas à être relus.
  */
 export function avecRetour(
   messageSucces?: string,
-  { erreursDansLaPage = false } = {},
+  {
+    erreursDansLaPage = false,
+    recharger,
+  }: { erreursDansLaPage?: boolean; recharger?: string } = {},
 ): SubmitFunction {
   return ({ formElement, submitter }) => {
     formElement.setAttribute("aria-busy", "true");
@@ -22,7 +28,12 @@ export function avecRetour(
       if (message && !(erreursDansLaPage && message.type === "erreur")) {
         afficherMessage(message);
       }
-      await update();
+      if (recharger) {
+        await update({ invalidateAll: false });
+        await invalidate(recharger);
+      } else {
+        await update();
+      }
     };
   };
 }

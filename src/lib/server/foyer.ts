@@ -11,9 +11,10 @@ export interface MonFoyer {
 export async function chercherMonFoyer(
   supabase: SupabaseClient,
 ): Promise<MonFoyer | null> {
+  // Une seule requête : le foyer et le nombre de ses membres (relation membres.foyer_id).
   const { data: foyer, error } = await supabase
     .from("foyers")
-    .select("id, code_invitation, fuseau")
+    .select("id, code_invitation, fuseau, membres(count)")
     .maybeSingle();
   if (error) {
     throw error;
@@ -21,14 +22,11 @@ export async function chercherMonFoyer(
   if (!foyer) {
     return null;
   }
-  const { count } = await supabase
-    .from("membres")
-    .select("user_id", { count: "exact", head: true })
-    .eq("foyer_id", foyer.id);
+  const [{ count } = { count: 1 }] = foyer.membres as { count: number }[];
   return {
     id: foyer.id,
     codeInvitation: foyer.code_invitation,
-    nombreDeMembres: count ?? 1,
+    nombreDeMembres: count,
     fuseau: foyer.fuseau,
   };
 }

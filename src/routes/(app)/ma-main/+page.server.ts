@@ -21,13 +21,14 @@ import type { Actions, PageServerLoad } from "./$types";
 export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   depends(DEPENDANCE_CARTES);
   const { foyer } = await parent();
-  const moi = (await locals.utilisateurConnecte())?.id ?? "";
   const aujourdhui = aujourdhuiPourLeFoyer(foyer.fuseau);
-  const cartes = await listerCartesDeLaSemaine(locals.supabase, aujourdhui);
-  const echanges = await listerEchanges(
-    locals.supabase,
-    lundiDeLaSemaine(aujourdhui),
-  );
+  // Trois lectures indépendantes : en parallèle plutôt que l'une après l'autre.
+  const [utilisateur, cartes, echanges] = await Promise.all([
+    locals.utilisateurConnecte(),
+    listerCartesDeLaSemaine(locals.supabase, aujourdhui),
+    listerEchanges(locals.supabase, lundiDeLaSemaine(aujourdhui)),
+  ]);
+  const moi = utilisateur?.id ?? "";
 
   const parId = new Map(cartes.map((c) => [c.carte.id, c.carte]));
   const resume = (id: string | null) => {

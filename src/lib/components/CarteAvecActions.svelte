@@ -2,6 +2,7 @@
   import { enhance } from "$app/forms";
   import type { Carte } from "$lib/cartes";
   import { avecRetour } from "$lib/formulaire";
+  import { DEPENDANCE_CARTES } from "$lib/temps-reel";
   import CarteTache from "./Carte.svelte";
 
   let {
@@ -75,7 +76,7 @@
         <form
           method="POST"
           action={`?/${action}`}
-          use:enhance={avecRetour(message)}
+          use:enhance={avecRetour(message, { recharger: DEPENDANCE_CARTES })}
         >
           <input type="hidden" name="carte" value={carte.id} />
           {#if faite}<input type="hidden" name="faite" value={faite} />{/if}
