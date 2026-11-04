@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import { CATEGORIES } from "$lib/categories";
 </script>
 
@@ -17,6 +18,8 @@
       </li>
     {/each}
   </ul>
+
+  <a class="lien" href={resolve("/demo/cartes")}>Voir les cartes</a>
 </main>
 
 <style>
@@ -42,6 +45,14 @@
     gap: 12px;
     padding: 0;
     list-style: none;
+  }
+
+  .lien {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--texte);
+    font-weight: 700;
   }
 
   .carte {
