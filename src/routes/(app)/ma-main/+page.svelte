@@ -2,6 +2,7 @@
   import { enhance } from "$app/forms";
   import Balance from "$lib/components/Balance.svelte";
   import CarteTache from "$lib/components/Carte.svelte";
+  import Echanges from "$lib/components/Echanges.svelte";
   import { separerMain } from "$lib/main";
   import type { ActionData, PageData } from "./$types";
 
@@ -39,6 +40,10 @@
 {/if}
 {#if form?.erreur}
   <p class="message-erreur" role="alert">{form.erreur}</p>
+{:else if form?.echangePropose}
+  <p class="confirmation" role="status">
+    Échange proposé : l'autre peut accepter, refuser ou contre-proposer.
+  </p>
 {:else if form?.remise}
   <p class="confirmation" role="status">
     La carte est repartie sur le Marché : l'autre peut la prendre.
@@ -46,6 +51,10 @@
 {/if}
 
 <Balance poidsMoi={data.poids.moi} poidsAutre={data.poids.autre} />
+
+{#if data.echanges.length > 0}
+  <Echanges echanges={data.echanges} aDonner={data.aDonner} />
+{/if}
 
 {#each sections as section (section.titre)}
   <section>
@@ -68,6 +77,14 @@
                 {section.action.libelle}
               </button>
             </form>
+            {#if !carte.retournee && !data.engagees.includes(carte.id)}
+              <form method="POST" action="?/proposerEchange" use:enhance>
+                <input type="hidden" name="carte" value={carte.id} />
+                <button type="submit" class="action secondaire"
+                  >Proposer un échange</button
+                >
+              </form>
+            {/if}
             {#if !carte.retournee}
               <form method="POST" action="?/remettreAuMarche" use:enhance>
                 <input type="hidden" name="carte" value={carte.id} />
