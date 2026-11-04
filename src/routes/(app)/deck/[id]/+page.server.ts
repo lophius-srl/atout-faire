@@ -5,12 +5,13 @@ import {
   supprimerTache,
   trouverTache,
 } from "$lib/server/deck";
-import { error, fail, redirect } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, params }) => {
   const tache = await trouverTache(locals.supabase, params.id);
-  if (!tache) error(404, "Cette tâche n'existe pas ou plus.");
+  // Tâche supprimée (par moi ou par l'autre parent) : on revient au deck plutôt qu'une page d'erreur.
+  if (!tache) redirect(303, "/deck");
   const moi = (await locals.utilisateurConnecte())?.id ?? "";
   return { tache, parents: await listerParents(locals.supabase, moi) };
 };

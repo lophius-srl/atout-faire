@@ -8,7 +8,11 @@
   let { data, form }: { data: PageData; form: ActionData } = $props();
 
   function confirmerSuppression(event: SubmitEvent) {
-    if (!confirm(`Supprimer « ${data.tache.nom} » du deck ?`))
+    if (
+      !confirm(
+        `Supprimer « ${data.tache.nom} » du deck ? Ses cartes encore à faire quitteront le Marché et les mains.`,
+      )
+    )
       event.preventDefault();
   }
 </script>
@@ -20,8 +24,8 @@
 <a class="retour" href={resolve("/deck")}>← Le deck</a>
 <h1>Modifier la tâche</h1>
 <p class="aide">
-  Les changements s'appliquent aux prochaines cartes, pas à celles déjà
-  distribuées.
+  Les changements s'appliquent aux prochaines cartes. Supprimer la tâche retire
+  aussi ses cartes encore à faire.
 </p>
 
 <FormulaireTache
