@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { resolve } from "$app/paths";
   import { duree } from "$lib/animations";
   import { afficherMessage } from "$lib/notifications.svelte";
   import { fly } from "svelte/transition";
@@ -45,7 +46,7 @@
       class="bouton-foyer"
       aria-expanded={panneauOuvert}
       aria-controls="panneau-foyer"
-      aria-label="Mon foyer"
+      aria-label="Foyer et réglages"
       onclick={() => (panneauOuvert = !panneauOuvert)}
     >
       🏠{#if seul}<span class="pastille-alerte" aria-hidden="true"></span>{/if}
@@ -92,6 +93,18 @@
       {:else}
         <p>Vous êtes deux dans ce foyer. 🎉</p>
       {/if}
+
+      <nav class="reglages" aria-label="Réglages">
+        <a href={resolve("/deck")} onclick={() => (panneauOuvert = false)}>
+          <span aria-hidden="true">🗂️</span> Le deck : vos tâches
+        </a>
+        <a
+          href={resolve("/deck/gouts")}
+          onclick={() => (panneauOuvert = false)}
+        >
+          <span aria-hidden="true">😊</span> Mes goûts
+        </a>
+      </nav>
     </div>
   {/if}
 </header>
@@ -188,6 +201,28 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+  }
+
+  .reglages {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #f0e6de;
+  }
+
+  .reglages a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 0 14px;
+    border-radius: 14px;
+    background: var(--fond);
+    color: var(--texte);
+    font-weight: 700;
+    text-decoration: none;
   }
 
   .secondaire {
