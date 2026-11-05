@@ -9,13 +9,25 @@
   import { resolve } from "$app/paths";
   import CarteTache from "$lib/components/Carte.svelte";
   import { organiserMarche } from "$lib/marche";
+  import { sansCartesRetirees } from "$lib/optimiste";
+  import { actionsEnAttente, oublierConfirmees } from "$lib/optimiste.svelte";
   import { flip } from "svelte/animate";
   import { fly } from "svelte/transition";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
 
-  const marche = $derived(organiserMarche(data.auMarche));
+  // La carte piochée quitte le Marché tout de suite ; elle revient si l'autre l'a prise avant.
+  const auMarche = $derived(
+    sansCartesRetirees(data.auMarche, actionsEnAttente, (c) => c.carte.id),
+  );
+  const marche = $derived(organiserMarche(auMarche));
+  $effect(() =>
+    oublierConfirmees(
+      data.auMarche.map((c) => c.carte),
+      "marche",
+    ),
+  );
 
   const sections = $derived([
     { titre: "Aujourd'hui", cartes: marche.duJour },
@@ -45,7 +57,7 @@
     <p class="en-jeu">🎁 À la clé : <strong>{data.recompenseEnJeu}</strong></p>
   {/if}
 {/if}
-{#if data.auMarche.length === 0}
+{#if auMarche.length === 0}
   <p class="aide">
     Le Marché est vide. Les cartes arrivent à partir des tâches du
     <a href={resolve("/deck")}>deck</a>.
@@ -87,6 +99,10 @@
                 action="?/piocher"
                 use:enhance={avecRetour("C'est dans ta main ✋", {
                   recharger: DEPENDANCE_CARTES,
+                  optimiste: {
+                    carte: carte.id,
+                    action: { type: "retirer", depuis: "marche" },
+                  },
                 })}
               >
                 <input type="hidden" name="carte" value={carte.id} />

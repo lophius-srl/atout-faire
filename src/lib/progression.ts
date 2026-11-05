@@ -4,6 +4,8 @@ export interface Progression {
   /** Cartes retournées cette semaine, tous parents confondus. */
   retournees: number;
   total: number;
+  /** Cartes d'aujourd'hui pas encore retournées, tous parents confondus. */
+  resteDuJour: number;
   /** Toutes les cartes d'aujourd'hui sont retournées. */
   jourFini: boolean;
   semaineFinie: boolean;
@@ -28,6 +30,7 @@ export function progressionDuFoyer(
   return {
     retournees,
     total,
+    resteDuJour: duJour.filter((c) => !c.retournee).length,
     jourFini: duJour.length > 0 && duJour.every((c) => c.retournee),
     semaineFinie: total > 0 && retournees >= total,
   };
