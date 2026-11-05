@@ -342,3 +342,26 @@ export function fenetresAllumees(
     Math.floor((retournees / total) * nombreDeFenetres),
   );
 }
+
+/** Un bâtiment vaincu ensemble, pour la galerie des souvenirs. */
+export interface Souvenir {
+  /** Lundi de la semaine où il a été illuminé. */
+  lundi: string;
+  /** Niveau affiché (1 = la tente), qui continue de grimper après le palais. */
+  niveau: number;
+  batiment: Batiment;
+}
+
+/**
+ * Les semaines vaincues, de la plus ancienne à la plus récente, deviennent des souvenirs,
+ * du plus récent au plus ancien : la n-ième semaine vaincue a illuminé le bâtiment du niveau n.
+ */
+export function souvenirs(lundisVaincus: readonly string[]): Souvenir[] {
+  return lundisVaincus
+    .map((lundi, rang) => ({
+      lundi,
+      niveau: rang + 1,
+      batiment: batimentDuNiveau(rang),
+    }))
+    .reverse();
+}
