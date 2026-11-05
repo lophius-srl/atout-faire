@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BatimentDeLaSemaine from "$lib/components/BatimentDeLaSemaine.svelte";
   import Celebration from "$lib/components/Celebration.svelte";
   import { enhance } from "$app/forms";
   import { duree } from "$lib/animations";
@@ -28,6 +29,14 @@
 <Celebration progression={data.progression} />
 
 <h1>Le Marché</h1>
+
+{#if data.progression.total > 0}
+  <BatimentDeLaSemaine
+    batiment={data.batiment}
+    retournees={data.progression.retournees}
+    total={data.progression.total}
+  />
+{/if}
 {#if data.auMarche.length === 0}
   <p class="aide">
     Le Marché est vide. Les cartes arrivent à partir des tâches du

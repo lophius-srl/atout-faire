@@ -1,5 +1,10 @@
-import { dateDansFuseau, heureDansFuseau } from "$lib/distribution";
+import {
+  dateDansFuseau,
+  heureDansFuseau,
+  lundiDeLaSemaine,
+} from "$lib/distribution";
 import { proposerCoupDeMain } from "$lib/balance";
+import { batimentDeLaSemaine } from "$lib/batiments";
 import { poidsDesMains } from "$lib/main";
 import { niveauAttente } from "$lib/marche";
 import { listerCartesDeLaSemaine } from "$lib/server/cartes";
@@ -40,6 +45,7 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   );
   return {
     progression,
+    batiment: batimentDeLaSemaine(lundiDeLaSemaine(maintenant.date)),
     auMarche,
     coupDeMain: proposerCoupDeMain(poids.moi, poids.autre, auMarche.length),
   };
