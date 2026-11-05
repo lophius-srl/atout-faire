@@ -111,6 +111,9 @@
         >
           <span aria-hidden="true">🎁</span> Nos récompenses
         </a>
+        <a href={resolve("/vacances")} onclick={() => (panneauOuvert = false)}>
+          <span aria-hidden="true">🌴</span> Nos vacances
+        </a>
       </nav>
     </div>
   {/if}

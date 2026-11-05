@@ -1,4 +1,5 @@
 import { dateDansFuseau, type DateLocale } from "$lib/distribution";
+import type { Vacances } from "$lib/vacances";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface MonFoyer {
@@ -38,4 +39,18 @@ export async function aujourdhuiDansMonFoyer(
 ): Promise<DateLocale> {
   const foyer = await chercherMonFoyer(supabase);
   return dateDansFuseau(new Date(), foyer?.fuseau ?? "Europe/Paris");
+}
+
+/** Les périodes de vacances du foyer qui finissent à partir de `depuis`, dans l'ordre. */
+export async function listerVacances(
+  supabase: SupabaseClient,
+  depuis: DateLocale,
+): Promise<Vacances[]> {
+  const { data, error } = await supabase
+    .from("vacances")
+    .select("debut, fin")
+    .gte("fin", depuis)
+    .order("debut");
+  if (error) throw error;
+  return data as Vacances[];
 }

@@ -10,6 +10,7 @@ import {
   lundiDeLaSemaine,
   type DateLocale,
 } from "$lib/distribution";
+import type { Vacances } from "$lib/vacances";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { listerTaches } from "./deck";
 
@@ -39,7 +40,6 @@ export function aujourdhuiPourLeFoyer(fuseau: string): DateLocale {
   return dateDansFuseau(new Date(), fuseau);
 }
 
-/** Crée les cartes manquantes de la semaine. Sans effet si elles existent déjà. */
 /**
  * Crée les cartes manquantes de la semaine (sans effet si elles existent déjà),
  * et renvoie le nombre de cartes prévues pour toute la semaine, jusqu'à dimanche.
@@ -47,6 +47,7 @@ export function aujourdhuiPourLeFoyer(fuseau: string): DateLocale {
 export async function distribuerCartes(
   supabase: SupabaseClient,
   fuseau: string,
+  vacances: readonly Vacances[],
 ): Promise<number> {
   const taches = await listerTaches(supabase);
   const aDistribuer = taches.map((tache) => ({
@@ -57,8 +58,9 @@ export async function distribuerCartes(
   const prevues = cartesAttendues(
     aDistribuer,
     ajouterJours(lundiDeLaSemaine(aujourdhui), 6),
+    vacances,
   ).length;
-  const cartes = cartesAttendues(aDistribuer, aujourdhui);
+  const cartes = cartesAttendues(aDistribuer, aujourdhui, vacances);
   if (cartes.length === 0) return prevues;
   const { error } = await supabase.from("cartes").upsert(
     cartes.map((c) => ({
