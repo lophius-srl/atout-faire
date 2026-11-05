@@ -4,6 +4,7 @@ import {
   dateDansFuseau,
   jourDeLaSemaine,
   lundiDeLaSemaine,
+  prochaineSemaineDuMois,
   type TacheADistribuer,
 } from "./distribution";
 
@@ -123,6 +124,78 @@ describe("cartes attendues", () => {
       expect(resume("2026-11-08", [rdv("2026-11-07")])).toEqual([
         "rdv jour 2026-11-07",
       ]);
+    });
+  });
+
+  describe("toutes les deux semaines", () => {
+    // Créée le mercredi 4 novembre : semaine du 2 novembre.
+    const draps = tache({
+      id: "draps",
+      frequence: "bimensuelle",
+      jours: null,
+      creeLe: "2026-11-04",
+    });
+
+    it("donne une carte de la semaine une semaine sur deux, dès la semaine de création", () => {
+      expect(resume("2026-11-04", [draps])).toEqual([
+        "draps semaine 2026-11-02",
+      ]);
+      expect(resume("2026-11-10", [draps])).toEqual([]);
+      expect(resume("2026-11-16", [draps])).toEqual([
+        "draps semaine 2026-11-16",
+      ]);
+      expect(resume("2026-11-23", [draps])).toEqual([]);
+    });
+
+    it("garde le rythme d'une année sur l'autre", () => {
+      expect(resume("2026-12-28", [draps])).toEqual([
+        "draps semaine 2026-12-28",
+      ]);
+      expect(resume("2027-01-04", [draps])).toEqual([]);
+    });
+
+    it("ne donne rien avant la semaine de création", () => {
+      expect(resume("2026-10-26", [draps])).toEqual([]);
+    });
+  });
+
+  describe("une fois par mois", () => {
+    const frigo = (creeLe: string) =>
+      tache({ id: "frigo", frequence: "mensuelle", jours: null, creeLe });
+
+    it("donne une carte la première semaine du mois seulement", () => {
+      const taches = [frigo("2026-10-01")];
+      expect(resume("2026-11-05", taches)).toEqual([
+        "frigo semaine 2026-11-02",
+      ]);
+      expect(resume("2026-11-12", taches)).toEqual([]);
+      expect(resume("2026-11-30", taches)).toEqual([]);
+      expect(resume("2026-12-07", taches)).toEqual([
+        "frigo semaine 2026-12-07",
+      ]);
+      expect(resume("2027-01-04", taches)).toEqual([
+        "frigo semaine 2027-01-04",
+      ]);
+    });
+
+    it("attend le mois suivant quand elle est créée après la première semaine", () => {
+      const taches = [frigo("2026-11-10")];
+      expect(resume("2026-11-10", taches)).toEqual([]);
+      expect(resume("2026-12-07", taches)).toEqual([
+        "frigo semaine 2026-12-07",
+      ]);
+    });
+
+    it("donne la carte du mois quand elle est créée pendant la première semaine", () => {
+      expect(resume("2026-11-05", [frigo("2026-11-04")])).toEqual([
+        "frigo semaine 2026-11-02",
+      ]);
+    });
+
+    it("annonce la prochaine semaine prévue", () => {
+      expect(prochaineSemaineDuMois("2026-11-05")).toBe("2026-11-02");
+      expect(prochaineSemaineDuMois("2026-11-10")).toBe("2026-12-07");
+      expect(prochaineSemaineDuMois("2026-12-31")).toBe("2027-01-04");
     });
   });
 });

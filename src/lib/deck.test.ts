@@ -3,6 +3,7 @@ import {
   estPassee,
   libelleFrequence,
   libellePenibilite,
+  libelleSemaine,
   lireSaisieTache,
 } from "./deck";
 
@@ -65,6 +66,21 @@ describe("saisie d'une tâche", () => {
     }
   });
 
+  it.each(["bimensuelle", "mensuelle"])(
+    "accepte une tâche %s, sans jours ni date",
+    (frequence) => {
+      const resultat = lireSaisieTache(
+        formulaire({ ...valide, frequence, dateUnique: "2026-12-24" }),
+        AUJOURDHUI,
+      );
+      expect(resultat.ok && resultat.tache).toMatchObject({
+        frequence,
+        jours: null,
+        dateUnique: null,
+      });
+    },
+  );
+
   it("oublie la date d'une tâche qui n'est pas ponctuelle", () => {
     const resultat = lireSaisieTache(
       formulaire({ ...valide, dateUnique: "2026-12-24" }),
@@ -120,6 +136,15 @@ describe("libellés", () => {
     ).toBe("Une fois par semaine");
   });
 
+  it.each([
+    ["bimensuelle", "Toutes les deux semaines"],
+    ["mensuelle", "Une fois par mois"],
+  ] as const)("décrit une tâche %s", (frequence, libelle) => {
+    expect(libelleFrequence({ frequence, jours: null, dateUnique: null })).toBe(
+      libelle,
+    );
+  });
+
   it("donne la date d'une tâche ponctuelle", () => {
     expect(
       libelleFrequence({
@@ -140,6 +165,10 @@ describe("libellés", () => {
     expect(
       estPassee({ frequence: "hebdomadaire", dateUnique: null }, AUJOURDHUI),
     ).toBe(false);
+  });
+
+  it("nomme une semaine par son lundi", () => {
+    expect(libelleSemaine("2026-12-07")).toBe("semaine du 7 décembre");
   });
 
   it("nomme la pénibilité", () => {

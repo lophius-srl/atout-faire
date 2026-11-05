@@ -83,7 +83,17 @@ select pg_temp.doit_echouer(
      values ('Linge', 'maison', 'hebdomadaire', '2026-11-12', 1)$q$,
   'check constraint');
 select pg_temp.doit_echouer(
-  $q$insert into public.taches (nom, categorie, frequence, penibilite) values ('Linge', 'maison', 'mensuelle', 1)$q$,
+  $q$insert into public.taches (nom, categorie, frequence, penibilite) values ('Linge', 'maison', 'annuelle', 1)$q$,
+  'check constraint');
+
+-- Toutes les deux semaines et une fois par mois : ni jours ni date.
+insert into public.taches (nom, categorie, frequence, penibilite)
+  values ('Draps', 'maison', 'bimensuelle', 2), ('Frigo', 'cuisine', 'mensuelle', 2);
+select pg_temp.doit_echouer(
+  $q$insert into public.taches (nom, categorie, frequence, jours, penibilite) values ('Draps', 'maison', 'bimensuelle', '{1}', 2)$q$,
+  'check constraint');
+select pg_temp.doit_echouer(
+  $q$insert into public.taches (nom, categorie, frequence, date_unique, penibilite) values ('Frigo', 'cuisine', 'mensuelle', '2026-12-01', 2)$q$,
   'check constraint');
 
 -- Rien n'a bougé chez A et B.

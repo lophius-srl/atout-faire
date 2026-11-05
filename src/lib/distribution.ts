@@ -41,6 +41,43 @@ export function lundiDeLaSemaine(date: DateLocale): DateLocale {
   return ajouterJours(date, 1 - jourDeLaSemaine(date));
 }
 
+const MS_PAR_SEMAINE = 7 * 24 * 60 * 60 * 1000;
+
+/** Nombre de semaines du lundi `depuis` au lundi `jusqua` (négatif si `jusqua` est avant). */
+function semainesEntre(depuis: DateLocale, jusqua: DateLocale): number {
+  return Math.round(
+    (versDateUtc(jusqua).getTime() - versDateUtc(depuis).getTime()) /
+      MS_PAR_SEMAINE,
+  );
+}
+
+/** La semaine d'une tâche mensuelle : la première du mois, celle dont le lundi tombe entre le 1er et le 7. */
+export function estSemaineDuMois(lundi: DateLocale): boolean {
+  return Number(lundi.slice(8, 10)) <= 7;
+}
+
+/** Lundi de la prochaine semaine d'une tâche mensuelle, à partir de la semaine d'`aujourdhui` incluse. */
+export function prochaineSemaineDuMois(aujourdhui: DateLocale): DateLocale {
+  let lundi = lundiDeLaSemaine(aujourdhui);
+  while (!estSemaineDuMois(lundi)) lundi = ajouterJours(lundi, 7);
+  return lundi;
+}
+
+/**
+ * Une tâche sur plusieurs semaines donne-t-elle une carte la semaine de `lundi` ?
+ * Toutes les deux semaines : au rythme de la semaine de création.
+ * Une fois par mois : la première semaine du mois, à partir de la semaine de création.
+ */
+function donneUneCarteLaSemaine(
+  tache: TacheADistribuer,
+  lundi: DateLocale,
+): boolean {
+  const ecart = semainesEntre(lundiDeLaSemaine(tache.creeLe), lundi);
+  if (ecart < 0) return false;
+  if (tache.frequence === "bimensuelle") return ecart % 2 === 0;
+  return estSemaineDuMois(lundi);
+}
+
 function nouvelleCarte(
   tache: TacheADistribuer,
   echeance: NouvelleCarte["echeance"],
@@ -70,6 +107,12 @@ export function cartesAttendues(
   for (const tache of taches) {
     if (tache.frequence === "hebdomadaire") {
       cartes.push(nouvelleCarte(tache, "semaine", lundi));
+      continue;
+    }
+    if (tache.frequence === "bimensuelle" || tache.frequence === "mensuelle") {
+      if (donneUneCarteLaSemaine(tache, lundi)) {
+        cartes.push(nouvelleCarte(tache, "semaine", lundi));
+      }
       continue;
     }
     if (tache.frequence === "ponctuelle") {

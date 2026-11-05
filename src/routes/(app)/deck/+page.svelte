@@ -2,7 +2,13 @@
   import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
   import { trouverCategorie } from "$lib/categories";
-  import { estPassee, libelleFrequence, libellePenibilite } from "$lib/deck";
+  import {
+    estPassee,
+    libelleFrequence,
+    libellePenibilite,
+    libelleSemaine,
+  } from "$lib/deck";
+  import { prochaineSemaineDuMois } from "$lib/distribution";
   import { avecRetour } from "$lib/formulaire";
   import type { PageData } from "./$types";
 
@@ -81,9 +87,11 @@
               >{/if}</span
           >
           <span class="details">
-            {categorie.nom} · {libelleFrequence(tache)} · {libellePenibilite(
-              tache.penibilite,
-            )}
+            {categorie.nom} · {libelleFrequence(
+              tache,
+            )}{#if tache.frequence === "mensuelle"}
+              ({libelleSemaine(prochaineSemaineDuMois(data.aujourdhui))}){/if}
+            · {libellePenibilite(tache.penibilite)}
           </span>
           {#if tache.fixePour}
             <span class="fixe">Réservée à : {nomParent(tache.fixePour)}</span>
