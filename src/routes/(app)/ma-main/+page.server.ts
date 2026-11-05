@@ -10,6 +10,8 @@ import {
 } from "$lib/echanges";
 import { poidsDesMains, semaineFinie } from "$lib/main";
 import { listerEchanges } from "$lib/server/echanges";
+import { listerMercis } from "$lib/server/mercis";
+import { faitParLautre, mercisNonVus } from "$lib/mercis";
 import {
   aujourdhuiPourLeFoyer,
   listerCartesDeLaSemaine,
@@ -24,10 +26,11 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   const { foyer } = await parent();
   const aujourdhui = aujourdhuiPourLeFoyer(foyer.fuseau);
   // Trois lectures indépendantes : en parallèle plutôt que l'une après l'autre.
-  const [utilisateur, cartes, echanges] = await Promise.all([
+  const [utilisateur, cartes, echanges, mercis] = await Promise.all([
     locals.utilisateurConnecte(),
     listerCartesDeLaSemaine(locals.supabase, aujourdhui),
     listerEchanges(locals.supabase, lundiDeLaSemaine(aujourdhui)),
+    listerMercis(locals.supabase, lundiDeLaSemaine(aujourdhui)),
   ]);
   const moi = utilisateur?.id ?? "";
 
@@ -55,6 +58,8 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   );
   return {
     progression,
+    mercisRecus: mercisNonVus(mercis, cartes, moi),
+    faitParLautre: faitParLautre(cartes, mercis, moi),
     maMain,
     engagees: [...engagees],
     // Cartes que je peux donner en échange : dans ma main, à faire, pas déjà engagées.
@@ -127,5 +132,17 @@ export const actions: Actions = {
       ma_carte: String(donnees.get("maCarte") ?? "") || null,
     });
     if (error) return fail(400, { erreur: error.message });
+  },
+
+  direMerci: async ({ request, locals }) => {
+    const carte = String((await request.formData()).get("carte") ?? "");
+    const { error } = await locals.supabase.rpc("dire_merci", { carte });
+    if (error) return fail(400, { erreur: error.message });
+  },
+
+  mercisVus: async ({ locals }) => {
+    const { error } = await locals.supabase.rpc("marquer_mercis_vus");
+    if (error)
+      return fail(500, { erreur: "Impossible d'enregistrer. Réessaie." });
   },
 };

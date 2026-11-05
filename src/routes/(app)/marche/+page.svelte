@@ -1,4 +1,5 @@
 <script lang="ts">
+  import BandeauMercis from "$lib/components/BandeauMercis.svelte";
   import BatimentDeLaSemaine from "$lib/components/BatimentDeLaSemaine.svelte";
   import Celebration from "$lib/components/Celebration.svelte";
   import { enhance } from "$app/forms";
@@ -29,6 +30,10 @@
 <Celebration progression={data.progression} />
 
 <h1>Le Marché</h1>
+
+{#if data.mercisRecus}
+  <BandeauMercis message={data.mercisRecus} />
+{/if}
 
 {#if data.progression.total > 0}
   <BatimentDeLaSemaine

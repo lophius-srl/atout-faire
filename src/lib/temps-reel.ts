@@ -5,7 +5,7 @@ import { createBrowserClient } from "@supabase/ssr";
 export const DEPENDANCE_CARTES = "app:cartes";
 
 /**
- * Écoute les changements des cartes et des échanges du foyer et appelle `surChangement`.
+ * Écoute les changements des cartes, des échanges et des mercis du foyer et appelle `surChangement`.
  * La session est lue dans les cookies posés par le serveur ; les règles RLS filtrent ce qui est diffusé.
  * Renvoie la fonction qui arrête l'écoute.
  */
@@ -28,6 +28,12 @@ export function ecouterCartes(
     .on(
       "postgres_changes",
       { event: "*", schema: "public", table: "echanges", filter: filtre },
+      surChangement,
+    )
+
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "mercis", filter: filtre },
       surChangement,
     )
     .subscribe();

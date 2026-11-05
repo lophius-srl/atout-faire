@@ -8,6 +8,8 @@ import { batimentDeLaSemaine } from "$lib/batiments";
 import { poidsDesMains } from "$lib/main";
 import { niveauAttente } from "$lib/marche";
 import { listerCartesDeLaSemaine } from "$lib/server/cartes";
+import { listerMercis } from "$lib/server/mercis";
+import { mercisNonVus } from "$lib/mercis";
 import { progressionDuFoyer } from "$lib/progression";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
 import { fail } from "@sveltejs/kit";
@@ -21,9 +23,10 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
     date: dateDansFuseau(instant, foyer.fuseau),
     heure: heureDansFuseau(instant, foyer.fuseau),
   };
-  const [utilisateur, cartes] = await Promise.all([
+  const [utilisateur, cartes, mercis] = await Promise.all([
     locals.utilisateurConnecte(),
     listerCartesDeLaSemaine(locals.supabase, maintenant.date),
+    listerMercis(locals.supabase, lundiDeLaSemaine(maintenant.date)),
   ]);
   const poids = poidsDesMains(cartes, utilisateur?.id ?? "");
   const auMarche = cartes
@@ -45,6 +48,7 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   );
   return {
     progression,
+    mercisRecus: mercisNonVus(mercis, cartes, utilisateur?.id ?? ""),
     batiment: batimentDeLaSemaine(lundiDeLaSemaine(maintenant.date)),
     auMarche,
     coupDeMain: proposerCoupDeMain(poids.moi, poids.autre, auMarche.length),
@@ -59,5 +63,11 @@ export const actions: Actions = {
       return fail(409, { erreur: "Trop tard : cette carte a déjà été prise." });
     }
     return { piochee: carte };
+  },
+
+  mercisVus: async ({ locals }) => {
+    const { error } = await locals.supabase.rpc("marquer_mercis_vus");
+    if (error)
+      return fail(500, { erreur: "Impossible d'enregistrer. Réessaie." });
   },
 };
