@@ -12,7 +12,10 @@
   import { sansCartesRetirees } from "$lib/optimiste";
   import { actionsEnAttente, oublierConfirmees } from "$lib/optimiste.svelte";
   import { flip } from "svelte/animate";
-  import { fly } from "svelte/transition";
+  import { trajetVersCible } from "$lib/animations";
+  import { annoncerArriveeDansLaMain } from "$lib/rebond.svelte";
+  import { cubicIn } from "svelte/easing";
+  import { fade } from "svelte/transition";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
@@ -22,6 +25,41 @@
     sansCartesRetirees(data.auMarche, actionsEnAttente, (c) => c.carte.id),
   );
   const marche = $derived(organiserMarche(auMarche));
+
+  const DUREE_ENVOL = 550;
+  let finEnvol = 0;
+
+  /**
+   * La carte que je pioche s'envole vers l'onglet « Ma main » en rapetissant.
+   * Une carte qui quitte le Marché autrement (prise par l'autre) s'efface simplement.
+   */
+  function sortie(element: Element, { id }: { id: string }) {
+    const onglet = document.querySelector('.navigation a[href$="/ma-main"]');
+    const piocheeParMoi = actionsEnAttente.get(id)?.type === "retirer";
+    const duration = duree(DUREE_ENVOL);
+    if (!onglet || !piocheeParMoi || duration === 0) {
+      return fade(element, { duration: duree(200) });
+    }
+    const { dx, dy, echelle } = trajetVersCible(
+      element.getBoundingClientRect(),
+      onglet.getBoundingClientRect(),
+    );
+    finEnvol = performance.now() + duration;
+    return {
+      duration,
+      easing: cubicIn,
+      css: (_t: number, u: number) =>
+        `z-index: 10; transform: translate(${dx * u}px, ${dy * u}px) scale(${1 - (1 - echelle) * u}) rotate(${-14 * u}deg); opacity: ${1 - 0.6 * u * u};`,
+    };
+  }
+
+  /** L'onglet rebondit quand la carte arrive, si le serveur a bien confirmé la pioche. */
+  function quandPiocheConfirmee() {
+    setTimeout(
+      annoncerArriveeDansLaMain,
+      Math.max(0, finEnvol - performance.now()),
+    );
+  }
   $effect(() =>
     oublierConfirmees(
       data.auMarche.map((c) => c.carte),
@@ -84,7 +122,7 @@
           {#each section.cartes as { carte, niveau } (carte.id)}
             <li
               animate:flip={{ duration: duree(250) }}
-              out:fly={{ y: -60, duration: duree(250) }}
+              out:sortie={{ id: carte.id }}
               class="emplacement"
               class:niveau-1={niveau === 1}
               class:niveau-2={niveau === 2}
@@ -99,6 +137,7 @@
                 action="?/piocher"
                 use:enhance={avecRetour("C'est dans ta main ✋", {
                   recharger: DEPENDANCE_CARTES,
+                  surSucces: quandPiocheConfirmee,
                   optimiste: {
                     carte: carte.id,
                     action: { type: "retirer", depuis: "marche" },

@@ -20,6 +20,7 @@ import { messageApresAction } from "./retour";
  * si l'action échoue. Un second toucher sur la même carte est ignoré tant que la réponse n'est pas là.
  * La page appelle `oublierConfirmees` quand ses données changent.
  * `surEnvoi` : appelé au moment de l'envoi (ex. refermer les actions de la carte).
+ * `surSucces` : appelé quand le serveur a accepté l'action.
  */
 export function avecRetour(
   messageSucces?: string,
@@ -28,11 +29,13 @@ export function avecRetour(
     recharger,
     optimiste,
     surEnvoi,
+    surSucces,
   }: {
     erreursDansLaPage?: boolean;
     recharger?: string;
     optimiste?: { carte: string; action: ActionOptimiste };
     surEnvoi?: () => void;
+    surSucces?: () => void;
   } = {},
 ): SubmitFunction {
   return ({ formElement, submitter, cancel }) => {
@@ -47,6 +50,7 @@ export function avecRetour(
       formElement.removeAttribute("aria-busy");
       submitter?.removeAttribute("data-envoi");
       const message = messageApresAction(result, messageSucces);
+      if (result.type === "success") surSucces?.();
       if (message && !(erreursDansLaPage && message.type === "erreur")) {
         afficherMessage(message);
       }
