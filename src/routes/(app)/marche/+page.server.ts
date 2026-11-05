@@ -1,8 +1,12 @@
-import { dateDansFuseau, heureDansFuseau } from "$lib/distribution";
+import {
+  dateDansFuseau,
+  heureDansFuseau,
+  lundiDeLaSemaine,
+} from "$lib/distribution";
 import { proposerCoupDeMain } from "$lib/balance";
 import { poidsDesMains } from "$lib/main";
 import { niveauAttente } from "$lib/marche";
-import { listerCartesDeLaSemaine } from "$lib/server/cartes";
+import { listerCartesDeLaSemaine, semainesVaincues } from "$lib/server/cartes";
 import { progressionDuFoyer } from "$lib/progression";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
 import { fail } from "@sveltejs/kit";
@@ -16,9 +20,10 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
     date: dateDansFuseau(instant, foyer.fuseau),
     heure: heureDansFuseau(instant, foyer.fuseau),
   };
-  const [utilisateur, cartes] = await Promise.all([
+  const [utilisateur, cartes, niveau] = await Promise.all([
     locals.utilisateurConnecte(),
     listerCartesDeLaSemaine(locals.supabase, maintenant.date),
+    semainesVaincues(locals.supabase, lundiDeLaSemaine(maintenant.date)),
   ]);
   const poids = poidsDesMains(cartes, utilisateur?.id ?? "");
   const auMarche = cartes
@@ -40,6 +45,7 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   );
   return {
     progression,
+    niveau,
     auMarche,
     coupDeMain: proposerCoupDeMain(poids.moi, poids.autre, auMarche.length),
   };
