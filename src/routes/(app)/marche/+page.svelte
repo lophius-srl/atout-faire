@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Celebration from "$lib/components/Celebration.svelte";
   import { enhance } from "$app/forms";
   import { duree } from "$lib/animations";
   import { avecRetour } from "$lib/formulaire";
@@ -23,6 +24,8 @@
 <svelte:head>
   <title>Marché · Atout faire</title>
 </svelte:head>
+
+<Celebration progression={data.progression} />
 
 <h1>Le Marché</h1>
 {#if data.auMarche.length === 0}

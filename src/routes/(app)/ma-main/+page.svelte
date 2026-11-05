@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Celebration from "$lib/components/Celebration.svelte";
   import { duree } from "$lib/animations";
   import Balance from "$lib/components/Balance.svelte";
   import CarteAvecActions from "$lib/components/CarteAvecActions.svelte";
@@ -40,6 +41,8 @@
 <svelte:head>
   <title>Ma main · Atout faire</title>
 </svelte:head>
+
+<Celebration progression={data.progression} />
 
 <h1>Ma main</h1>
 <p class="aide">
