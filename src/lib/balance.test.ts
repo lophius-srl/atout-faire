@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   descriptionBalance,
+  proposerCoupDeMain,
   INCLINAISON_MAX,
   inclinaisonBalance,
 } from "./balance";
@@ -48,5 +49,23 @@ describe("description de la balance", () => {
     for (const inclinaison of [-14, -9, -3, 0, 3, 9, 14]) {
       expect(descriptionBalance(inclinaison)).not.toMatch(/\d/);
     }
+  });
+});
+
+describe("coup de main", () => {
+  it("est proposé quand l'autre en porte beaucoup plus et qu'il reste des cartes", () => {
+    expect(proposerCoupDeMain(2, 8, 3)).toBe(true);
+  });
+
+  it("n'est pas proposé quand l'écart est faible", () => {
+    expect(proposerCoupDeMain(5, 6, 3)).toBe(false);
+  });
+
+  it("n'est pas proposé quand c'est moi qui en porte plus", () => {
+    expect(proposerCoupDeMain(8, 2, 3)).toBe(false);
+  });
+
+  it("n'est pas proposé quand le Marché est vide", () => {
+    expect(proposerCoupDeMain(0, 10, 0)).toBe(false);
   });
 });
