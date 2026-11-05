@@ -1,5 +1,3 @@
-import type { DateLocale } from "./distribution";
-
 export type BatimentId = "cabane" | "maison" | "moulin" | "phare" | "chateau";
 
 export interface Fenetre {
@@ -12,6 +10,10 @@ export interface Fenetre {
 export interface Batiment {
   id: BatimentId;
   nom: string;
+  /** Pour « Illuminez-le » / « Illuminez-la ». */
+  pronom: "le" | "la";
+  /** Pour « passer au phare » / « passer à la maison ». */
+  destination: string;
   /** Fenêtres dans l'ordre où elles s'allument (dessin de 200 × 140). */
   fenetres: readonly Fenetre[];
 }
@@ -23,16 +25,22 @@ export const BATIMENTS: readonly Batiment[] = [
   {
     id: "cabane",
     nom: "la cabane",
+    pronom: "la",
+    destination: "à la cabane",
     fenetres: [f(76, 92), f(112, 92), f(94, 66, 12, 10)],
   },
   {
     id: "maison",
     nom: "la maison",
+    pronom: "la",
+    destination: "à la maison",
     fenetres: [f(66, 98), f(122, 98), f(66, 70), f(94, 70), f(122, 70)],
   },
   {
     id: "moulin",
     nom: "le moulin",
+    pronom: "le",
+    destination: "au moulin",
     fenetres: [
       f(94, 110, 12, 12),
       f(84, 92, 10, 12),
@@ -45,6 +53,8 @@ export const BATIMENTS: readonly Batiment[] = [
   {
     id: "phare",
     nom: "le phare",
+    pronom: "le",
+    destination: "au phare",
     fenetres: [
       f(94, 112, 12, 12),
       f(95, 94, 10, 10),
@@ -57,6 +67,8 @@ export const BATIMENTS: readonly Batiment[] = [
   {
     id: "chateau",
     nom: "le château",
+    pronom: "le",
+    destination: "au château",
     fenetres: [
       f(46, 98, 10, 14),
       f(144, 98, 10, 14),
@@ -72,22 +84,13 @@ export const BATIMENTS: readonly Batiment[] = [
   },
 ];
 
-/** Lundi de référence pour compter les semaines (un lundi). */
-const PREMIER_LUNDI: DateLocale = "2026-01-05";
-
-function semainesDepuis(lundi: DateLocale): number {
-  const jours =
-    (Date.parse(`${lundi}T00:00:00Z`) -
-      Date.parse(`${PREMIER_LUNDI}T00:00:00Z`)) /
-    86_400_000;
-  return Math.floor(jours / 7);
-}
-
-/** Le bâtiment de la semaine qui commence ce lundi : on avance d'un niveau chaque semaine. */
-export function batimentDeLaSemaine(lundi: DateLocale): Batiment {
-  const rang =
-    ((semainesDepuis(lundi) % BATIMENTS.length) + BATIMENTS.length) %
-    BATIMENTS.length;
+/**
+ * Le bâtiment à vaincre au niveau donné (0 = la cabane). On ne monte d'un niveau
+ * qu'en illuminant entièrement le bâtiment d'une semaine ; après le château, on
+ * repart de la cabane, mais le niveau continue de grimper.
+ */
+export function batimentDuNiveau(niveau: number): Batiment {
+  const rang = Math.max(0, Math.floor(niveau)) % BATIMENTS.length;
   return BATIMENTS[rang];
 }
 

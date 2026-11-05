@@ -4,10 +4,9 @@ import {
   lundiDeLaSemaine,
 } from "$lib/distribution";
 import { proposerCoupDeMain } from "$lib/balance";
-import { batimentDeLaSemaine } from "$lib/batiments";
 import { poidsDesMains } from "$lib/main";
 import { niveauAttente } from "$lib/marche";
-import { listerCartesDeLaSemaine } from "$lib/server/cartes";
+import { listerCartesDeLaSemaine, semainesVaincues } from "$lib/server/cartes";
 import { listerMercis } from "$lib/server/mercis";
 import { mercisNonVus } from "$lib/mercis";
 import { progressionDuFoyer } from "$lib/progression";
@@ -23,10 +22,11 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
     date: dateDansFuseau(instant, foyer.fuseau),
     heure: heureDansFuseau(instant, foyer.fuseau),
   };
-  const [utilisateur, cartes, mercis] = await Promise.all([
+  const [utilisateur, cartes, mercis, niveau] = await Promise.all([
     locals.utilisateurConnecte(),
     listerCartesDeLaSemaine(locals.supabase, maintenant.date),
     listerMercis(locals.supabase, lundiDeLaSemaine(maintenant.date)),
+    semainesVaincues(locals.supabase, lundiDeLaSemaine(maintenant.date)),
   ]);
   const poids = poidsDesMains(cartes, utilisateur?.id ?? "");
   const auMarche = cartes
@@ -49,7 +49,7 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   return {
     progression,
     mercisRecus: mercisNonVus(mercis, cartes, utilisateur?.id ?? ""),
-    batiment: batimentDeLaSemaine(lundiDeLaSemaine(maintenant.date)),
+    niveau,
     auMarche,
     coupDeMain: proposerCoupDeMain(poids.moi, poids.autre, auMarche.length),
   };

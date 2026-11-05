@@ -37,7 +37,7 @@
 
 {#if data.progression.total > 0}
   <BatimentDeLaSemaine
-    batiment={data.batiment}
+    niveau={data.niveau}
     retournees={data.progression.retournees}
     total={data.progression.total}
   />
