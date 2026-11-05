@@ -2,6 +2,7 @@
   import { BATIMENTS } from "$lib/batiments";
   import DessinBatiment from "$lib/components/DessinBatiment.svelte";
   import { libelleSemaine } from "$lib/deck";
+  import { jourEtMois } from "$lib/vacances";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
@@ -44,6 +45,14 @@
             <span class="semaine"
               >{majuscule(libelleSemaine(souvenir.lundi))}</span
             >
+            {#if souvenir.recompense}
+              <span class="recompense">
+                🎁 {souvenir.recompense.description}
+                {#if souvenir.recompense.le}<span class="date"
+                    >Vécue le {jourEtMois(souvenir.recompense.le)}</span
+                  >{/if}
+              </span>
+            {/if}
           </figcaption>
         </figure>
       </li>
@@ -101,5 +110,20 @@
 
   .semaine {
     color: #d8d3f5;
+  }
+
+  .recompense {
+    margin-top: 6px;
+    padding: 6px 8px;
+    border-radius: 10px;
+    background: #fff1c2;
+    color: #6b4e0f;
+    font-weight: 700;
+  }
+
+  .date {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
   }
 </style>

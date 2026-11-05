@@ -66,6 +66,17 @@ insert into public.cartes (tache_id, nom, categorie, penibilite, echeance, date_
 select public.profiter_recompense((select id from ids where nom = 'resto'));
 do $$ begin
   perform pg_temp.verifier((select profitee from public.recompenses where niveau = 1), 'Le resto devrait être profité');
+  perform pg_temp.verifier(
+    (select profitee_le from public.recompenses where niveau = 1) is not null, 'Le resto devrait avoir sa date');
+end $$;
+
+-- Un second toucher garde la première date.
+create temp table date_resto as select profitee_le from public.recompenses where niveau = 1;
+select public.profiter_recompense((select id from ids where nom = 'resto'));
+do $$ begin
+  perform pg_temp.verifier(
+    (select profitee_le from public.recompenses where niveau = 1) = (select profitee_le from date_resto),
+    'La date de la récompense vécue ne doit pas changer');
 end $$;
 
 -- Le ciné (boss 5) n'est ni accepté ni débloqué ; on peut le retirer, pas le resto déjà vécu.
