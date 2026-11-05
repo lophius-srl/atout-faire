@@ -7,12 +7,19 @@
     libelleFrequence,
     libellePenibilite,
     libelleSemaine,
+    type Tache,
   } from "$lib/deck";
   import { prochaineSemaineDuMois } from "$lib/distribution";
   import { avecRetour } from "$lib/formulaire";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
+
+  // Pour une tâche mensuelle, on annonce aussi la prochaine semaine prévue.
+  const frequenceDetaillee = (tache: Tache) =>
+    tache.frequence === "mensuelle"
+      ? `${libelleFrequence(tache)} (${libelleSemaine(prochaineSemaineDuMois(data.aujourdhui))})`
+      : libelleFrequence(tache);
 
   const nomParent = (id: string) =>
     data.parents.find((p) => p.id === id)?.nom ?? "un parent";
@@ -87,11 +94,9 @@
               >{/if}</span
           >
           <span class="details">
-            {categorie.nom} · {libelleFrequence(
-              tache,
-            )}{#if tache.frequence === "mensuelle"}
-              ({libelleSemaine(prochaineSemaineDuMois(data.aujourdhui))}){/if}
-            · {libellePenibilite(tache.penibilite)}
+            {categorie.nom} · {frequenceDetaillee(tache)} · {libellePenibilite(
+              tache.penibilite,
+            )}
           </span>
           {#if tache.fixePour}
             <span class="fixe">Réservée à : {nomParent(tache.fixePour)}</span>

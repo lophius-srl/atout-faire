@@ -116,7 +116,7 @@
     padding: 4px;
     border: 2px solid transparent;
     border-radius: 12px;
-    background: rgb(255 255 255 / 60%);
+    background: rgb(var(--surface-rgb) / 60%);
     color: var(--encre);
     font: inherit;
     font-size: 0.75rem;
@@ -129,6 +129,6 @@
 
   .gout[aria-pressed="true"] {
     border-color: var(--encre);
-    background: #fff;
+    background: var(--surface);
   }
 </style>

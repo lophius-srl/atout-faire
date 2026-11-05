@@ -80,7 +80,7 @@
     padding: 0 14px;
     border: none;
     border-radius: 999px;
-    background: #fff;
+    background: var(--surface);
     color: var(--encre);
     font: inherit;
     font-weight: 800;

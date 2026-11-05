@@ -129,7 +129,7 @@
     z-index: 5;
     margin: calc(-1 * env(safe-area-inset-top)) -16px 0;
     padding: env(safe-area-inset-top) 16px 0;
-    background: rgb(255 248 240 / 94%);
+    background: rgb(var(--voile) / 94%);
     backdrop-filter: blur(10px);
   }
 
@@ -153,7 +153,7 @@
     height: 44px;
     border: none;
     border-radius: 50%;
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
     font-size: 1.3rem;
   }
@@ -164,7 +164,7 @@
     right: 6px;
     width: 10px;
     height: 10px;
-    border: 2px solid #fff;
+    border: 2px solid var(--fond);
     border-radius: 50%;
     background: #e8743b;
   }
@@ -178,8 +178,8 @@
     padding: 8px 14px;
     border: none;
     border-radius: 14px;
-    background: #fff1c2;
-    color: #8a6414;
+    background: var(--or-fond);
+    color: var(--or-texte);
     font: inherit;
     font-weight: 600;
   }
@@ -193,7 +193,7 @@
     margin: 0 auto 10px;
     padding: 14px 16px;
     border-radius: var(--rayon);
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
   }
 
@@ -222,7 +222,7 @@
     gap: 6px;
     margin-top: 14px;
     padding-top: 12px;
-    border-top: 1px solid #f0e6de;
+    border-top: 1px solid var(--separateur);
   }
 
   .reglages a {

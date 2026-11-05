@@ -114,7 +114,7 @@
     gap: 8px;
     padding: 14px;
     border-radius: var(--rayon);
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
   }
 
@@ -126,9 +126,9 @@
   input {
     min-height: 48px;
     padding: 0 12px;
-    border: 2px solid #e8ddd5;
+    border: 2px solid var(--bordure);
     border-radius: 14px;
-    background: #fff;
+    background: var(--surface);
     font: inherit;
   }
 
@@ -147,8 +147,8 @@
     gap: 4px;
     padding: 14px;
     border-radius: 14px;
-    background: #fff1c2;
-    color: #6b4e0f;
+    background: var(--or-fond);
+    color: var(--or-texte);
   }
 
   .recompense.a_accepter {
@@ -156,12 +156,12 @@
   }
 
   .recompense.debloquee {
-    background: #dcf5d9;
-    color: #2f6b2a;
+    background: var(--vert-fond);
+    color: var(--vert-texte);
   }
 
   .recompense.profitee {
-    background: #f0ebe6;
+    background: var(--neutre);
     color: var(--texte-doux);
   }
 

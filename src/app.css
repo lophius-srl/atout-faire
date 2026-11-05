@@ -4,6 +4,26 @@
   --texte-doux: #7a6e68;
   --carte-ombre: 0 6px 16px rgb(120 80 60 / 18%);
   --rayon: 18px;
+  /* Surfaces posées sur le fond : panneaux, champs, bandeaux. */
+  --surface: #fff;
+  --surface-rgb: 255 255 255;
+  --bordure: #e8ddd5;
+  --separateur: #f0e6de;
+  --neutre: #f0ebe6;
+  /* Le fond, en composantes, pour les voiles translucides. */
+  --voile: 255 248 240;
+  --erreur: #a4482a;
+  --or-fond: #fff1c2;
+  --or-texte: #6b4e0f;
+  --vert-fond: #dcf5d9;
+  --vert-texte: #3a7a35;
+  --bleu-fond: #d6ecff;
+  --bleu-texte: #24507a;
+  --violet-fond: #e7e1ff;
+  --violet-texte: #5a46a8;
+  --rose-fond: #ffe3f1;
+  --rose-texte: #a33a72;
+  color-scheme: light dark;
   font-family:
     "Nunito",
     ui-rounded,
@@ -13,6 +33,33 @@
     sans-serif;
   color: var(--texte);
   background: var(--fond);
+}
+
+/* Mode sombre : suit le réglage de l'iPhone. Les cartes gardent leurs couleurs, comme de vraies cartes. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #1f1a18;
+    --texte: #f3ebe5;
+    --texte-doux: #b9ada6;
+    --carte-ombre: 0 6px 16px rgb(0 0 0 / 45%);
+    --surface: #2c2522;
+    --surface-rgb: 44 37 34;
+    --bordure: #4a3f3a;
+    --separateur: #3a312d;
+    --neutre: #3a312d;
+    --voile: 31 26 24;
+    --erreur: #ff9c7a;
+    --or-fond: #4a3a12;
+    --or-texte: #ffe08a;
+    --vert-fond: #1f3d22;
+    --vert-texte: #a5e3a0;
+    --bleu-fond: #1c3550;
+    --bleu-texte: #b0d8ff;
+    --violet-fond: #2f2950;
+    --violet-texte: #d3c9ff;
+    --rose-fond: #4a2238;
+    --rose-texte: #ffb8dc;
+  }
 }
 
 * {
@@ -47,9 +94,10 @@ body {
 .page-formulaire input {
   min-height: 48px;
   padding: 0 14px;
-  border: 2px solid #e8ddd5;
+  border: 2px solid var(--bordure);
   border-radius: 14px;
-  background: #fff;
+  background: var(--surface);
+  color: inherit;
   font: inherit;
   font-size: 1.1rem;
 }
@@ -69,7 +117,7 @@ body {
 }
 
 .message-erreur {
-  color: #a4482a;
+  color: var(--erreur);
   font-weight: 700;
 }
 

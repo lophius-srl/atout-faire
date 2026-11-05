@@ -116,7 +116,7 @@
   .echange {
     padding: 12px;
     border-radius: 14px;
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
   }
 
@@ -161,9 +161,9 @@
   select {
     min-height: 44px;
     padding: 0 10px;
-    border: 2px solid #e8ddd5;
+    border: 2px solid var(--bordure);
     border-radius: 12px;
-    background: #fff;
+    background: var(--surface);
     font: inherit;
   }
 

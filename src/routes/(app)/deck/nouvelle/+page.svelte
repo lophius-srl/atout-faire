@@ -82,9 +82,9 @@
     align-items: center;
     min-height: 44px;
     padding: 0 14px;
-    border: 2px solid #e8ddd5;
+    border: 2px solid var(--bordure);
     border-radius: 999px;
-    background: #fff;
+    background: var(--surface);
     color: var(--texte);
     font-weight: 700;
     text-decoration: none;

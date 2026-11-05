@@ -31,7 +31,7 @@
     justify-content: center;
     gap: 8px;
     padding: 8px 16px calc(8px + env(safe-area-inset-bottom));
-    background: rgb(255 248 240 / 92%);
+    background: rgb(var(--voile) / 92%);
     backdrop-filter: blur(10px);
     box-shadow: 0 -4px 16px rgb(120 80 60 / 10%);
   }
@@ -52,7 +52,7 @@
   }
 
   .lien[aria-current="page"] {
-    background: #fff;
+    background: var(--surface);
     color: var(--texte);
     box-shadow: var(--carte-ombre);
   }

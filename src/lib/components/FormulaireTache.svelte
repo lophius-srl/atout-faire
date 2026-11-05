@@ -190,9 +190,9 @@
   .date input {
     min-height: 48px;
     padding: 0 14px;
-    border: 2px solid #e8ddd5;
+    border: 2px solid var(--bordure);
     border-radius: 14px;
-    background: #fff;
+    background: var(--surface);
     font: inherit;
     font-size: 1.05rem;
   }
@@ -238,9 +238,9 @@
     align-items: center;
     min-height: 44px;
     padding: 0 14px;
-    border: 2px solid var(--encre, #e8ddd5);
+    border: 2px solid var(--encre, var(--bordure));
     border-radius: 999px;
-    background: #fff;
+    background: var(--surface);
     color: var(--encre, var(--texte));
     font-weight: 700;
     cursor: pointer;
@@ -249,6 +249,14 @@
   .pastille:has(input:checked) {
     background: var(--couleur, var(--texte));
     color: var(--encre, var(--fond));
+  }
+
+  /* En sombre, l'encre des catégories serait illisible sur le fond : on écrit avec leur couleur claire. */
+  @media (prefers-color-scheme: dark) {
+    .pastille:not(:has(input:checked)) {
+      border-color: var(--couleur, var(--bordure));
+      color: var(--couleur, var(--texte));
+    }
   }
 
   .pastille input {

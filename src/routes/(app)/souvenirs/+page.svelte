@@ -116,8 +116,8 @@
     margin-top: 6px;
     padding: 6px 8px;
     border-radius: 10px;
-    background: #fff1c2;
-    color: #6b4e0f;
+    background: var(--or-fond);
+    color: var(--or-texte);
     font-weight: 700;
   }
 

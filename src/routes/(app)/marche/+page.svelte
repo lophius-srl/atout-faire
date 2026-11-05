@@ -132,8 +132,8 @@
     margin: -6px 0 14px;
     padding: 10px 14px;
     border-radius: 14px;
-    background: #fff1c2;
-    color: #6b4e0f;
+    background: var(--or-fond);
+    color: var(--or-texte);
     font-weight: 700;
   }
 
@@ -141,8 +141,8 @@
     margin: 0 0 8px;
     padding: 12px 14px;
     border-radius: 14px;
-    background: #e7e1ff;
-    color: #5a46a8;
+    background: var(--violet-fond);
+    color: var(--violet-texte);
     font-weight: 700;
   }
 
@@ -179,13 +179,13 @@
   }
 
   .niveau-1 {
-    background: #fff;
+    background: var(--surface);
     box-shadow: 0 0 0 3px #f6b26b;
   }
 
   .niveau-2 {
     --attente: #e8743b;
-    background: #fff;
+    background: var(--surface);
     box-shadow: 0 0 0 4px var(--attente);
     animation: respire 2.4s ease-in-out infinite;
   }

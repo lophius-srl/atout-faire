@@ -80,7 +80,7 @@
     gap: 8px;
     padding: 14px;
     border-radius: var(--rayon);
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
   }
 
@@ -91,9 +91,9 @@
   input {
     min-height: 48px;
     padding: 0 12px;
-    border: 2px solid #e8ddd5;
+    border: 2px solid var(--bordure);
     border-radius: 14px;
-    background: #fff;
+    background: var(--surface);
     font: inherit;
   }
 
@@ -110,7 +110,7 @@
     min-height: 48px;
     border: 2px solid var(--texte);
     border-radius: 999px;
-    background: #fff;
+    background: var(--surface);
     color: var(--texte);
     font: inherit;
     font-weight: 700;

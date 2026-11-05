@@ -141,8 +141,8 @@
   .semaine-finie {
     padding: 14px 16px;
     border-radius: var(--rayon);
-    background: #dcf5d9;
-    color: #3a7a35;
+    background: var(--vert-fond);
+    color: var(--vert-texte);
     font-weight: 800;
     text-align: center;
   }

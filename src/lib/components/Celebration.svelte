@@ -102,7 +102,7 @@
     align-items: center;
     justify-content: center;
     padding: 24px;
-    background: rgb(255 248 240 / 70%);
+    background: rgb(var(--voile) / 70%);
     overflow: hidden;
   }
 
@@ -110,7 +110,7 @@
     max-width: 320px;
     padding: 24px;
     border-radius: var(--rayon);
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
     text-align: center;
   }
@@ -140,8 +140,8 @@
     margin-top: 10px;
     padding: 10px;
     border-radius: 12px;
-    background: #fff1c2;
-    color: #6b4e0f;
+    background: var(--or-fond);
+    color: var(--or-texte);
     font-weight: 800;
   }
 
