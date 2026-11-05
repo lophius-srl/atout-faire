@@ -111,55 +111,57 @@
       coup de main ?
     </p>
   {/if}
+{/if}
 
+<!-- Les listes restent en place même vides : la dernière carte piochée peut ainsi finir son envol. -->
+<div class:marche-vide={auMarche.length === 0}>
   {#each sections as section (section.titre)}
     <section>
       <h2>{section.titre}</h2>
       {#if section.cartes.length === 0}
         <p class="vide">Rien à prendre ici.</p>
-      {:else}
-        <ul class="grille">
-          {#each section.cartes as { carte, niveau } (carte.id)}
-            <li
-              animate:flip={{ duration: duree(250) }}
-              out:sortie={{ id: carte.id }}
-              class="emplacement"
-              class:niveau-1={niveau === 1}
-              class:niveau-2={niveau === 2}
-            >
-              {#if niveau > 0}
-                <span class="badge"
-                  >{niveau === 2 ? "Attend preneur" : "En attente"}</span
-                >
-              {/if}
-              <form
-                method="POST"
-                action="?/piocher"
-                use:enhance={avecRetour("C'est dans ta main ✋", {
-                  recharger: DEPENDANCE_CARTES,
-                  surSucces: quandPiocheConfirmee,
-                  optimiste: {
-                    carte: carte.id,
-                    action: { type: "retirer", depuis: "marche" },
-                  },
-                })}
-              >
-                <input type="hidden" name="carte" value={carte.id} />
-                <button
-                  type="submit"
-                  class="zone-carte"
-                  aria-label={`Piocher ${carte.tache}`}
-                >
-                  <CarteTache {carte} />
-                </button>
-              </form>
-            </li>
-          {/each}
-        </ul>
       {/if}
+      <ul class="grille">
+        {#each section.cartes as { carte, niveau } (carte.id)}
+          <li
+            animate:flip={{ duration: duree(250) }}
+            out:sortie={{ id: carte.id }}
+            class="emplacement"
+            class:niveau-1={niveau === 1}
+            class:niveau-2={niveau === 2}
+          >
+            {#if niveau > 0}
+              <span class="badge"
+                >{niveau === 2 ? "Attend preneur" : "En attente"}</span
+              >
+            {/if}
+            <form
+              method="POST"
+              action="?/piocher"
+              use:enhance={avecRetour("C'est dans ta main ✋", {
+                recharger: DEPENDANCE_CARTES,
+                surSucces: quandPiocheConfirmee,
+                optimiste: {
+                  carte: carte.id,
+                  action: { type: "retirer", depuis: "marche" },
+                },
+              })}
+            >
+              <input type="hidden" name="carte" value={carte.id} />
+              <button
+                type="submit"
+                class="zone-carte"
+                aria-label={`Piocher ${carte.tache}`}
+              >
+                <CarteTache {carte} />
+              </button>
+            </form>
+          </li>
+        {/each}
+      </ul>
     </section>
   {/each}
-{/if}
+</div>
 
 <style>
   h1 {
@@ -197,6 +199,12 @@
 
   .vide {
     color: var(--texte-doux);
+  }
+
+  /* Marché vide : seuls les titres disparaissent, la dernière carte finit son envol. */
+  .marche-vide h2,
+  .marche-vide .vide {
+    display: none;
   }
 
   .grille {
