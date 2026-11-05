@@ -14,6 +14,7 @@ import {
   aujourdhuiPourLeFoyer,
   listerCartesDeLaSemaine,
 } from "$lib/server/cartes";
+import { progressionDuFoyer } from "$lib/progression";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
@@ -44,7 +45,16 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   const engagees = cartesEngagees(echanges);
   const maMain = cartes.filter((c) => c.detenteur === moi).map((c) => c.carte);
 
+  const progression = progressionDuFoyer(
+    cartes.map((c) => ({
+      retournee: c.carte.retournee,
+      echeance: c.carte.echeance.type,
+      dateEcheance: c.dateEcheance,
+    })),
+    aujourdhui,
+  );
   return {
+    progression,
     maMain,
     engagees: [...engagees],
     // Cartes que je peux donner en échange : dans ma main, à faire, pas déjà engagées.

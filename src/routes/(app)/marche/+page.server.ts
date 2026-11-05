@@ -3,6 +3,7 @@ import { proposerCoupDeMain } from "$lib/balance";
 import { poidsDesMains } from "$lib/main";
 import { niveauAttente } from "$lib/marche";
 import { listerCartesDeLaSemaine } from "$lib/server/cartes";
+import { progressionDuFoyer } from "$lib/progression";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
@@ -29,7 +30,16 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
         maintenant,
       ),
     }));
+  const progression = progressionDuFoyer(
+    cartes.map((c) => ({
+      retournee: c.carte.retournee,
+      echeance: c.carte.echeance.type,
+      dateEcheance: c.dateEcheance,
+    })),
+    maintenant.date,
+  );
   return {
+    progression,
     auMarche,
     coupDeMain: proposerCoupDeMain(poids.moi, poids.autre, auMarche.length),
   };
