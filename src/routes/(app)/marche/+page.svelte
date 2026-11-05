@@ -27,7 +27,7 @@
   <title>Marché · Atout faire</title>
 </svelte:head>
 
-<Celebration progression={data.progression} />
+<Celebration progression={data.progression} recompense={data.recompenseEnJeu} />
 
 <h1>Le Marché</h1>
 
@@ -41,6 +41,9 @@
     retournees={data.progression.retournees}
     total={data.progression.total}
   />
+  {#if data.recompenseEnJeu}
+    <p class="en-jeu">🎁 À la clé : <strong>{data.recompenseEnJeu}</strong></p>
+  {/if}
 {/if}
 {#if data.auMarche.length === 0}
   <p class="aide">
@@ -107,6 +110,15 @@
   h1 {
     margin: 0;
     font-size: 1.8rem;
+  }
+
+  .en-jeu {
+    margin: -6px 0 14px;
+    padding: 10px 14px;
+    border-radius: 14px;
+    background: #fff1c2;
+    color: #6b4e0f;
+    font-weight: 700;
   }
 
   .coup-de-main {

@@ -10,23 +10,26 @@ import { listerCartesDeLaSemaine, semainesVaincues } from "$lib/server/cartes";
 import { listerMercis } from "$lib/server/mercis";
 import { mercisNonVus } from "$lib/mercis";
 import { progressionDuFoyer } from "$lib/progression";
+import { recompenseDuBoss } from "$lib/recompenses";
+import { listerRecompenses } from "$lib/server/recompenses";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   depends(DEPENDANCE_CARTES);
-  const { foyer } = await parent();
+  const { foyer, cartesPrevues } = await parent();
   const instant = new Date();
   const maintenant = {
     date: dateDansFuseau(instant, foyer.fuseau),
     heure: heureDansFuseau(instant, foyer.fuseau),
   };
-  const [utilisateur, cartes, mercis, niveau] = await Promise.all([
+  const [utilisateur, cartes, mercis, niveau, recompenses] = await Promise.all([
     locals.utilisateurConnecte(),
     listerCartesDeLaSemaine(locals.supabase, maintenant.date),
     listerMercis(locals.supabase, lundiDeLaSemaine(maintenant.date)),
     semainesVaincues(locals.supabase, lundiDeLaSemaine(maintenant.date)),
+    listerRecompenses(locals.supabase),
   ]);
   const poids = poidsDesMains(cartes, utilisateur?.id ?? "");
   const auMarche = cartes
@@ -45,9 +48,12 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
       dateEcheance: c.dateEcheance,
     })),
     maintenant.date,
+    cartesPrevues,
   );
   return {
     progression,
+    recompenseEnJeu:
+      recompenseDuBoss(recompenses, niveau + 1)?.description ?? null,
     mercisRecus: mercisNonVus(mercis, cartes, utilisateur?.id ?? ""),
     niveau,
     auMarche,

@@ -44,7 +44,7 @@
   <title>Ma main · Atout faire</title>
 </svelte:head>
 
-<Celebration progression={data.progression} />
+<Celebration progression={data.progression} recompense={data.recompenseEnJeu} />
 
 <h1>Ma main</h1>
 

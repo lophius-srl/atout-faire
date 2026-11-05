@@ -65,3 +65,22 @@ describe("ce qu'il faut fêter", () => {
     expect(aFeter(fini, fini)).toBeNull();
   });
 });
+
+describe("semaine finie et cartes à venir", () => {
+  it("n'est pas finie tant que des cartes des jours suivants sont prévues", () => {
+    const cartes = [
+      carte("jour", MARDI, true),
+      carte("semaine", "2026-11-02", true),
+    ];
+    const p = progressionDuFoyer(cartes, MARDI, 6);
+    expect(p).toMatchObject({ retournees: 2, total: 6, semaineFinie: false });
+  });
+
+  it("est finie quand les cartes prévues sont toutes retournées", () => {
+    const cartes = [
+      carte("jour", MARDI, true),
+      carte("semaine", "2026-11-02", true),
+    ];
+    expect(progressionDuFoyer(cartes, MARDI, 2).semaineFinie).toBe(true);
+  });
+});

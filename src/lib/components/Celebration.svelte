@@ -4,7 +4,10 @@
   import { untrack } from "svelte";
   import { fade, scale } from "svelte/transition";
 
-  let { progression }: { progression: Progression } = $props();
+  let {
+    progression,
+    recompense = null,
+  }: { progression: Progression; recompense?: string | null } = $props();
 
   const MESSAGES = {
     jour: {
@@ -78,6 +81,9 @@
       <span class="emoji" aria-hidden="true">{message.emoji}</span>
       <strong>{message.titre}</strong>
       <p>{message.texte}</p>
+      {#if fete === "semaine" && recompense}
+        <p class="recompense">🎁 Récompense gagnée : {recompense} !</p>
+      {/if}
       <button
         type="button"
         class="bouton-principal"
@@ -128,6 +134,15 @@
   p {
     margin: 6px 0 0;
     color: var(--texte-doux);
+  }
+
+  .recompense {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 12px;
+    background: #fff1c2;
+    color: #6b4e0f;
+    font-weight: 800;
   }
 
   .confettis span {

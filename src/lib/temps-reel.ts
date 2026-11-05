@@ -36,6 +36,12 @@ export function ecouterCartes(
       { event: "*", schema: "public", table: "mercis", filter: filtre },
       surChangement,
     )
+
+    .on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "recompenses", filter: filtre },
+      surChangement,
+    )
     .subscribe();
   return () => {
     void supabase.removeChannel(canal);

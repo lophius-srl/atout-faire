@@ -17,16 +17,19 @@ export function progressionDuFoyer(
     dateEcheance: DateLocale;
   }[],
   aujourdhui: DateLocale,
+  /** Cartes prévues pour toute la semaine : celles des jours à venir ne sont pas encore distribuées. */
+  cartesPrevues = 0,
 ): Progression {
   const retournees = cartes.filter((c) => c.retournee).length;
+  const total = Math.max(cartes.length, cartesPrevues);
   const duJour = cartes.filter(
     (c) => c.echeance === "jour" && c.dateEcheance === aujourdhui,
   );
   return {
     retournees,
-    total: cartes.length,
+    total,
     jourFini: duJour.length > 0 && duJour.every((c) => c.retournee),
-    semaineFinie: cartes.length > 0 && retournees === cartes.length,
+    semaineFinie: total > 0 && retournees >= total,
   };
 }
 
