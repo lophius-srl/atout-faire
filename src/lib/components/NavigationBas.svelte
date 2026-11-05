@@ -1,6 +1,7 @@
 <script lang="ts">
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
+  import { arriveesDansLaMain } from "$lib/rebond.svelte";
 
   const liens = [
     { href: resolve("/marche"), libelle: "Marché", icone: "🃏" },
@@ -18,13 +19,43 @@
         ? "page"
         : undefined}
     >
-      <span class="icone" aria-hidden="true">{lien.icone}</span>
+      {#if lien.libelle === "Ma main"}
+        <!-- Rejoue le rebond à chaque carte arrivée. -->
+        {#key arriveesDansLaMain.compte}
+          <span
+            class="icone"
+            class:rebond={arriveesDansLaMain.compte > 0}
+            aria-hidden="true">{lien.icone}</span
+          >
+        {/key}
+      {:else}
+        <span class="icone" aria-hidden="true">{lien.icone}</span>
+      {/if}
       {lien.libelle}
     </a>
   {/each}
 </nav>
 
 <style>
+  .rebond {
+    animation: rebond 0.5s ease-out;
+  }
+
+  @keyframes rebond {
+    30% {
+      transform: translateY(-8px) scale(1.25);
+    }
+    60% {
+      transform: translateY(0) scale(0.95);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rebond {
+      animation: none;
+    }
+  }
+
   .navigation {
     position: fixed;
     inset: auto 0 0;
