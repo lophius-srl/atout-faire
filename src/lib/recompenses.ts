@@ -1,3 +1,5 @@
+import { dateDansFuseau, type DateLocale } from "./distribution";
+
 /** Une récompense commune, posée sur un boss (niveau affiché, 1 = la tente). */
 export interface Recompense {
   id: string;
@@ -6,6 +8,8 @@ export interface Recompense {
   proposeePar: string;
   acceptee: boolean;
   profitee: boolean;
+  /** Instant (ISO) où elle a été vécue ; absent pour celles vécues avant qu'on le note. */
+  profiteeLe: string | null;
 }
 
 export type StatutRecompense =
@@ -70,4 +74,31 @@ export function lireProposition(
     };
   }
   return { ok: true, niveau, description };
+}
+
+/** Une récompense vécue, pour la galerie des souvenirs (sans dire qui l'a proposée). */
+export interface RecompenseVecue {
+  description: string;
+  /** Jour où elle a été vécue, dans le fuseau du foyer, ou null s'il n'est pas connu. */
+  le: DateLocale | null;
+}
+
+/** Les récompenses vécues, par niveau du boss qui les a débloquées. */
+export function recompensesVecues(
+  recompenses: readonly Recompense[],
+  fuseau: string,
+): Map<number, RecompenseVecue> {
+  return new Map(
+    recompenses
+      .filter((r) => r.profitee)
+      .map((r) => [
+        r.niveau,
+        {
+          description: r.description,
+          le: r.profiteeLe
+            ? dateDansFuseau(new Date(r.profiteeLe), fuseau)
+            : null,
+        },
+      ]),
+  );
 }

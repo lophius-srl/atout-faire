@@ -3,6 +3,7 @@ import {
   bossDisponibles,
   lireProposition,
   recompenseDuBoss,
+  recompensesVecues,
   statutRecompense,
   type Recompense,
 } from "./recompenses";
@@ -15,6 +16,7 @@ function recompense(modifications: Partial<Recompense> = {}): Recompense {
     proposeePar: "a",
     acceptee: false,
     profitee: false,
+    profiteeLe: null,
     ...modifications,
   };
 }
@@ -102,5 +104,35 @@ describe("saisie d'une proposition", () => {
       ok: false,
       erreur,
     });
+  });
+});
+
+describe("récompenses vécues", () => {
+  it("garde seulement les récompenses vécues, par niveau, avec leur jour au foyer", () => {
+    const vecues = recompensesVecues(
+      [
+        recompense({
+          niveau: 1,
+          acceptee: true,
+          profitee: true,
+          // 23 h 30 à Paris le 12 novembre : encore le 12 au foyer.
+          profiteeLe: "2026-11-12T22:30:00Z",
+        }),
+        recompense({ id: "r2", niveau: 2, acceptee: true }),
+        recompense({ id: "r3", niveau: 3 }),
+      ],
+      "Europe/Paris",
+    );
+    expect([...vecues]).toEqual([
+      [1, { description: "Resto japonais", le: "2026-11-12" }],
+    ]);
+  });
+
+  it("montre sans date une récompense vécue avant qu'on la note", () => {
+    const vecues = recompensesVecues(
+      [recompense({ acceptee: true, profitee: true })],
+      "Europe/Paris",
+    );
+    expect(vecues.get(5)).toEqual({ description: "Resto japonais", le: null });
   });
 });
