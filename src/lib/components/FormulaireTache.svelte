@@ -81,6 +81,24 @@
         <input
           type="radio"
           name="frequence"
+          value="bimensuelle"
+          bind:group={frequence}
+        />
+        Toutes les deux semaines
+      </label>
+      <label class="pastille">
+        <input
+          type="radio"
+          name="frequence"
+          value="mensuelle"
+          bind:group={frequence}
+        />
+        Une fois par mois
+      </label>
+      <label class="pastille">
+        <input
+          type="radio"
+          name="frequence"
           value="ponctuelle"
           bind:group={frequence}
         />
@@ -98,6 +116,10 @@
           required
         />
       </label>
+    {:else if frequence === "mensuelle"}
+      <p class="precision">
+        La carte arrive la première semaine de chaque mois.
+      </p>
     {/if}
     {#if frequence === "quotidienne"}
       <div class="choix jours">
@@ -193,6 +215,11 @@
 
   .jours {
     margin-top: 8px;
+  }
+
+  .precision {
+    margin: 8px 0 0;
+    color: var(--texte-doux);
   }
 
   .date {

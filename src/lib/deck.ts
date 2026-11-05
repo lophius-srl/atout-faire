@@ -2,7 +2,8 @@ import { JOURS } from "./cartes";
 import { CATEGORIES, type CategorieId } from "./categories";
 import type { DateLocale } from "./distribution";
 
-export type Frequence = "quotidienne" | "hebdomadaire" | "ponctuelle";
+export type Frequence =
+  "quotidienne" | "hebdomadaire" | "bimensuelle" | "mensuelle" | "ponctuelle";
 export type Penibilite = 1 | 2 | 3;
 
 /**
@@ -42,6 +43,8 @@ function texte(donnees: FormData, champ: string): string {
 const FREQUENCES: readonly Frequence[] = [
   "quotidienne",
   "hebdomadaire",
+  "bimensuelle",
+  "mensuelle",
   "ponctuelle",
 ];
 
@@ -112,6 +115,16 @@ export function libelleDate(date: DateLocale): string {
   return `Le ${texteDate}`;
 }
 
+/** « semaine du 7 décembre ». */
+export function libelleSemaine(lundi: DateLocale): string {
+  const texteDate = new Intl.DateTimeFormat("fr-FR", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "long",
+  }).format(new Date(`${lundi}T00:00:00Z`));
+  return `semaine du ${texteDate}`;
+}
+
 /** Une tâche ponctuelle dont la date est passée : elle ne donnera plus de carte. */
 export function estPassee(
   tache: Pick<Tache, "frequence" | "dateUnique">,
@@ -128,6 +141,8 @@ export function libelleFrequence(
   tache: Pick<Tache, "frequence" | "jours" | "dateUnique">,
 ): string {
   if (tache.frequence === "hebdomadaire") return "Une fois par semaine";
+  if (tache.frequence === "bimensuelle") return "Toutes les deux semaines";
+  if (tache.frequence === "mensuelle") return "Une fois par mois";
   if (tache.frequence === "ponctuelle") {
     return tache.dateUnique ? libelleDate(tache.dateUnique) : "Une seule fois";
   }
