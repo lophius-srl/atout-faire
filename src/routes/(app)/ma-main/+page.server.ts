@@ -11,27 +11,33 @@ import {
 import { poidsDesMains, semaineFinie } from "$lib/main";
 import { listerEchanges } from "$lib/server/echanges";
 import { listerMercis } from "$lib/server/mercis";
+import { semainesVaincues } from "$lib/server/cartes";
 import { faitParLautre, mercisNonVus } from "$lib/mercis";
 import {
   aujourdhuiPourLeFoyer,
   listerCartesDeLaSemaine,
 } from "$lib/server/cartes";
 import { progressionDuFoyer } from "$lib/progression";
+import { recompenseDuBoss } from "$lib/recompenses";
+import { listerRecompenses } from "$lib/server/recompenses";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
 export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   depends(DEPENDANCE_CARTES);
-  const { foyer } = await parent();
+  const { foyer, cartesPrevues } = await parent();
   const aujourdhui = aujourdhuiPourLeFoyer(foyer.fuseau);
   // Trois lectures indépendantes : en parallèle plutôt que l'une après l'autre.
-  const [utilisateur, cartes, echanges, mercis] = await Promise.all([
-    locals.utilisateurConnecte(),
-    listerCartesDeLaSemaine(locals.supabase, aujourdhui),
-    listerEchanges(locals.supabase, lundiDeLaSemaine(aujourdhui)),
-    listerMercis(locals.supabase, lundiDeLaSemaine(aujourdhui)),
-  ]);
+  const [utilisateur, cartes, echanges, mercis, niveau, recompenses] =
+    await Promise.all([
+      locals.utilisateurConnecte(),
+      listerCartesDeLaSemaine(locals.supabase, aujourdhui),
+      listerEchanges(locals.supabase, lundiDeLaSemaine(aujourdhui)),
+      listerMercis(locals.supabase, lundiDeLaSemaine(aujourdhui)),
+      semainesVaincues(locals.supabase, lundiDeLaSemaine(aujourdhui)),
+      listerRecompenses(locals.supabase),
+    ]);
   const moi = utilisateur?.id ?? "";
 
   const parId = new Map(cartes.map((c) => [c.carte.id, c.carte]));
@@ -55,9 +61,12 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
       dateEcheance: c.dateEcheance,
     })),
     aujourdhui,
+    cartesPrevues,
   );
   return {
     progression,
+    recompenseEnJeu:
+      recompenseDuBoss(recompenses, niveau + 1)?.description ?? null,
     mercisRecus: mercisNonVus(mercis, cartes, moi),
     faitParLautre: faitParLautre(cartes, mercis, moi),
     maMain,

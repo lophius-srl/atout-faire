@@ -3,6 +3,7 @@ import type { CategorieId } from "$lib/categories";
 import type { Penibilite } from "$lib/deck";
 import type { Gout } from "$lib/gouts";
 import {
+  ajouterJours,
   cartesAttendues,
   dateDansFuseau,
   jourDeLaSemaine,
@@ -39,17 +40,26 @@ export function aujourdhuiPourLeFoyer(fuseau: string): DateLocale {
 }
 
 /** Crée les cartes manquantes de la semaine. Sans effet si elles existent déjà. */
+/**
+ * Crée les cartes manquantes de la semaine (sans effet si elles existent déjà),
+ * et renvoie le nombre de cartes prévues pour toute la semaine, jusqu'à dimanche.
+ */
 export async function distribuerCartes(
   supabase: SupabaseClient,
   fuseau: string,
-): Promise<void> {
+): Promise<number> {
   const taches = await listerTaches(supabase);
   const aDistribuer = taches.map((tache) => ({
     ...tache,
     creeLe: dateDansFuseau(new Date(tache.creeLe), fuseau),
   }));
-  const cartes = cartesAttendues(aDistribuer, aujourdhuiPourLeFoyer(fuseau));
-  if (cartes.length === 0) return;
+  const aujourdhui = aujourdhuiPourLeFoyer(fuseau);
+  const prevues = cartesAttendues(
+    aDistribuer,
+    ajouterJours(lundiDeLaSemaine(aujourdhui), 6),
+  ).length;
+  const cartes = cartesAttendues(aDistribuer, aujourdhui);
+  if (cartes.length === 0) return prevues;
   const { error } = await supabase.from("cartes").upsert(
     cartes.map((c) => ({
       tache_id: c.tacheId,
@@ -63,6 +73,7 @@ export async function distribuerCartes(
     { onConflict: "tache_id,echeance,date_echeance", ignoreDuplicates: true },
   );
   if (error) throw error;
+  return prevues;
 }
 
 function versCarteDuFoyer(ligne: LigneCarte): CarteDuFoyer {

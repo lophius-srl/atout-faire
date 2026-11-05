@@ -12,6 +12,6 @@ export const load: LayoutServerLoad = async ({ locals }) => {
     redirect(303, ecran ?? "/foyer");
   }
   // Les cartes du jour arrivent quand quelqu'un ouvre l'app.
-  await distribuerCartes(locals.supabase, foyer.fuseau);
-  return { foyer };
+  const cartesPrevues = await distribuerCartes(locals.supabase, foyer.fuseau);
+  return { foyer, cartesPrevues };
 };
