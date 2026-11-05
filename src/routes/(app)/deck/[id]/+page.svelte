@@ -70,7 +70,7 @@
     margin-top: 16px;
     border: none;
     background: none;
-    color: #a4482a;
+    color: var(--erreur);
     font: inherit;
     font-weight: 700;
     text-decoration: underline;

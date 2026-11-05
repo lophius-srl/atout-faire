@@ -24,8 +24,8 @@
     margin: 8px 0 12px;
     padding: 14px;
     border-radius: 14px;
-    background: #ffe3f1;
-    color: #a33a72;
+    background: var(--rose-fond);
+    color: var(--rose-texte);
   }
 
   p {

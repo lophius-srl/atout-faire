@@ -48,8 +48,8 @@
     margin: 0 0 12px;
     padding: 12px 14px;
     border-radius: 14px;
-    background: #d6ecff;
-    color: #24507a;
+    background: var(--bleu-fond);
+    color: var(--bleu-texte);
     font-weight: 700;
     text-align: center;
   }

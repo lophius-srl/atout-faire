@@ -44,7 +44,7 @@
     margin: 0;
     padding: 12px 16px 14px;
     border-radius: var(--rayon);
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
     text-align: center;
   }

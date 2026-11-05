@@ -127,7 +127,7 @@
     gap: 8px;
     padding: 12px;
     border-radius: var(--rayon);
-    background: rgb(255 248 240 / 88%);
+    background: rgb(var(--voile) / 88%);
     backdrop-filter: blur(3px);
   }
 

@@ -64,7 +64,7 @@
   .code {
     padding: 16px;
     border-radius: var(--rayon);
-    background: #fff;
+    background: var(--surface);
     box-shadow: var(--carte-ombre);
     font-size: 2rem;
     font-weight: 800;
