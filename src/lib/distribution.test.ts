@@ -17,6 +17,7 @@ function tache(modifications: Partial<TacheADistribuer>): TacheADistribuer {
     categorie: "cuisine",
     frequence: "quotidienne",
     jours: [2],
+    dateUnique: null,
     penibilite: 2,
     fixePour: null,
     creeLe: "2026-10-01",
@@ -93,5 +94,35 @@ describe("cartes attendues", () => {
     expect(cartesAttendues(taches, MARDI)).toEqual(
       cartesAttendues(taches, MARDI),
     );
+  });
+
+  describe("tâche ponctuelle", () => {
+    const rdv = (dateUnique: string) =>
+      tache({
+        id: "rdv",
+        frequence: "ponctuelle",
+        jours: null,
+        dateUnique,
+      });
+
+    it("donne une seule carte du jour, à sa date", () => {
+      expect(resume("2026-11-05", [rdv("2026-11-05")])).toEqual([
+        "rdv jour 2026-11-05",
+      ]);
+      expect(resume("2026-11-08", [rdv("2026-11-05")])).toEqual([
+        "rdv jour 2026-11-05",
+      ]);
+    });
+
+    it("ne donne rien avant sa date ni une autre semaine", () => {
+      expect(resume("2026-11-04", [rdv("2026-11-05")])).toEqual([]);
+      expect(resume("2026-11-12", [rdv("2026-11-05")])).toEqual([]);
+    });
+
+    it("compte dans les cartes prévues de la semaine", () => {
+      expect(resume("2026-11-08", [rdv("2026-11-07")])).toEqual([
+        "rdv jour 2026-11-07",
+      ]);
+    });
   });
 });

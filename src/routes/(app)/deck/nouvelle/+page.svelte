@@ -10,6 +10,7 @@
     categorie: "maison",
     frequence: "quotidienne",
     jours: [],
+    dateUnique: null,
     penibilite: 2,
     fixePour: null,
   } as const;
@@ -49,6 +50,7 @@
       ? { ...data.modele, fixePour: null }
       : { ...vide, jours: [] }}
     parents={data.parents}
+    aujourdhui={data.aujourdhui}
     erreur={form?.erreur}
     libelleBouton="Ajouter au deck"
   />

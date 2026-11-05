@@ -9,11 +9,14 @@
   let {
     tache,
     parents,
+    aujourdhui,
     erreur,
     libelleBouton,
   }: {
     tache: SaisieTache;
     parents: { id: string; nom: string }[];
+    /** Une tâche ponctuelle ne peut pas être datée avant. */
+    aujourdhui: string;
     erreur?: string;
     libelleBouton: string;
   } = $props();
@@ -74,7 +77,28 @@
         />
         Une fois par semaine
       </label>
+      <label class="pastille">
+        <input
+          type="radio"
+          name="frequence"
+          value="ponctuelle"
+          bind:group={frequence}
+        />
+        Une seule fois
+      </label>
     </div>
+    {#if frequence === "ponctuelle"}
+      <label class="date">
+        Le
+        <input
+          type="date"
+          name="dateUnique"
+          min={aujourdhui}
+          value={tache.dateUnique ?? ""}
+          required
+        />
+      </label>
+    {/if}
     {#if frequence === "quotidienne"}
       <div class="choix jours">
         {#each JOURS as jour, index (jour)}
@@ -140,7 +164,8 @@
   }
 
   #nom,
-  select {
+  select,
+  .date input {
     min-height: 48px;
     padding: 0 14px;
     border: 2px solid #e8ddd5;
@@ -168,6 +193,17 @@
 
   .jours {
     margin-top: 8px;
+  }
+
+  .date {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+  }
+
+  .date input {
+    flex: 1;
   }
 
   .pastille {

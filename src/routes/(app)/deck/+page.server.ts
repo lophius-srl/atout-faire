@@ -1,11 +1,14 @@
 import { MODELES, trouverModele } from "$lib/modeles";
 import { ajouterTaches, listerParents, listerTaches } from "$lib/server/deck";
+import { aujourdhuiPourLeFoyer } from "$lib/server/cartes";
 import { fail } from "@sveltejs/kit";
 import type { Actions, PageServerLoad } from "./$types";
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ locals, parent }) => {
   const moi = (await locals.utilisateurConnecte())?.id ?? "";
+  const { foyer } = await parent();
   return {
+    aujourdhui: aujourdhuiPourLeFoyer(foyer.fuseau),
     taches: await listerTaches(locals.supabase),
     parents: await listerParents(locals.supabase, moi),
     modeles: MODELES,

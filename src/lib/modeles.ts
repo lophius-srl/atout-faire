@@ -7,9 +7,13 @@ const TOUS_LES_JOURS = [1, 2, 3, 4, 5, 6, 7];
 const EN_SEMAINE = [1, 2, 3, 4, 5];
 const JOURS_D_ECOLE = [1, 2, 4, 5];
 
-const hebdo = { frequence: "hebdomadaire", jours: null } as const;
+const hebdo = {
+  frequence: "hebdomadaire",
+  jours: null,
+  dateUnique: null,
+} as const;
 const quotidienne = (jours: number[]) =>
-  ({ frequence: "quotidienne", jours }) as const;
+  ({ frequence: "quotidienne", jours, dateUnique: null }) as const;
 
 export const MODELES: readonly Modele[] = [
   {

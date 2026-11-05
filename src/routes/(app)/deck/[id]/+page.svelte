@@ -31,6 +31,7 @@
 <FormulaireTache
   tache={data.tache}
   parents={data.parents}
+  aujourdhui={data.aujourdhui}
   erreur={form?.erreur}
   libelleBouton="Enregistrer"
 />

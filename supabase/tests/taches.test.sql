@@ -67,6 +67,25 @@ select pg_temp.doit_echouer(
   $q$insert into public.taches (nom, categorie, frequence, penibilite) values ('Linge', 'maison', 'quotidienne', 1)$q$,
   'check constraint');
 
+-- Une tâche ponctuelle a une date et pas de jours ; les autres n'ont pas de date.
+select pg_temp.en_tant_que('00000000-0000-0000-0000-00000000000c');
+insert into public.taches (nom, categorie, frequence, date_unique, penibilite)
+  values ('Pédiatre', 'enfants', 'ponctuelle', '2026-11-12', 2);
+select pg_temp.doit_echouer(
+  $q$insert into public.taches (nom, categorie, frequence, penibilite) values ('Impôts', 'admin', 'ponctuelle', 2)$q$,
+  'check constraint');
+select pg_temp.doit_echouer(
+  $q$insert into public.taches (nom, categorie, frequence, jours, date_unique, penibilite)
+     values ('Impôts', 'admin', 'ponctuelle', '{1}', '2026-11-12', 2)$q$,
+  'check constraint');
+select pg_temp.doit_echouer(
+  $q$insert into public.taches (nom, categorie, frequence, date_unique, penibilite)
+     values ('Linge', 'maison', 'hebdomadaire', '2026-11-12', 1)$q$,
+  'check constraint');
+select pg_temp.doit_echouer(
+  $q$insert into public.taches (nom, categorie, frequence, penibilite) values ('Linge', 'maison', 'mensuelle', 1)$q$,
+  'check constraint');
+
 -- Rien n'a bougé chez A et B.
 select pg_temp.en_tant_que('00000000-0000-0000-0000-00000000000a');
 do $$ begin

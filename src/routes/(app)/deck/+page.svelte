@@ -2,7 +2,7 @@
   import { enhance } from "$app/forms";
   import { resolve } from "$app/paths";
   import { trouverCategorie } from "$lib/categories";
-  import { libelleFrequence, libellePenibilite } from "$lib/deck";
+  import { estPassee, libelleFrequence, libellePenibilite } from "$lib/deck";
   import { avecRetour } from "$lib/formulaire";
   import type { PageData } from "./$types";
 
@@ -74,7 +74,12 @@
           style:--couleur={categorie.couleur}
           style:--encre={categorie.encre}
         >
-          <span class="nom">{tache.nom}</span>
+          <span class="nom"
+            >{tache.nom}
+            {#if estPassee(tache, data.aujourdhui)}<span class="passee"
+                >passée</span
+              >{/if}</span
+          >
           <span class="details">
             {categorie.nom} · {libelleFrequence(tache)} · {libellePenibilite(
               tache.penibilite,
@@ -103,6 +108,16 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
+  }
+
+  .passee {
+    margin-left: 6px;
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--fond);
+    color: var(--texte-doux);
+    font-size: 0.75rem;
+    font-weight: 700;
   }
 
   .lien-gouts {

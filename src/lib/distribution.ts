@@ -72,6 +72,13 @@ export function cartesAttendues(
       cartes.push(nouvelleCarte(tache, "semaine", lundi));
       continue;
     }
+    if (tache.frequence === "ponctuelle") {
+      const date = tache.dateUnique;
+      if (date && date >= lundi && date <= aujourdhui) {
+        cartes.push(nouvelleCarte(tache, "jour", date));
+      }
+      continue;
+    }
     const debut = tache.creeLe > lundi ? tache.creeLe : lundi;
     for (let jour = debut; jour <= aujourdhui; jour = ajouterJours(jour, 1)) {
       if (tache.jours?.includes(jourDeLaSemaine(jour))) {
