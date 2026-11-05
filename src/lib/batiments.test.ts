@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { BATIMENTS, batimentDuNiveau, fenetresAllumees } from "./batiments";
+import {
+  BATIMENTS,
+  batimentDuNiveau,
+  fenetresAllumees,
+  souvenirs,
+} from "./batiments";
 
 describe("bâtiments", () => {
   it("propose 20 niveaux aux noms uniques", () => {
@@ -61,5 +66,28 @@ describe("fenêtres allumées", () => {
   it("garde la dernière fenêtre pour la fin de la semaine", () => {
     expect(fenetresAllumees(9, 10, 5)).toBe(4);
     expect(fenetresAllumees(10, 10, 5)).toBe(5);
+  });
+});
+
+describe("souvenirs", () => {
+  it("rend chaque semaine vaincue au bâtiment de son niveau, la plus récente d'abord", () => {
+    const liste = souvenirs(["2026-10-19", "2026-11-02"]);
+    expect(liste.map((s) => [s.lundi, s.niveau, s.batiment.id])).toEqual([
+      ["2026-11-02", 2, "cabane"],
+      ["2026-10-19", 1, "tente"],
+    ]);
+  });
+
+  it("continue de compter après le palais", () => {
+    const lundis = Array.from({ length: BATIMENTS.length + 1 }, (_, i) =>
+      String(i),
+    );
+    const [dernier] = souvenirs(lundis);
+    expect(dernier.niveau).toBe(BATIMENTS.length + 1);
+    expect(dernier.batiment).toBe(BATIMENTS[0]);
+  });
+
+  it("n'a rien à montrer sans semaine vaincue", () => {
+    expect(souvenirs([])).toEqual([]);
   });
 });

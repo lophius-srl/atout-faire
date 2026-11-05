@@ -125,3 +125,15 @@ export async function semainesVaincues(
   if (error) throw error;
   return data as number;
 }
+
+/** Lundis des semaines vaincues avant ce lundi, de la plus ancienne à la plus récente. */
+export async function lundisVaincus(
+  supabase: SupabaseClient,
+  lundi: DateLocale,
+): Promise<DateLocale[]> {
+  const { data, error } = await supabase.rpc("semaines_vaincues_detail", {
+    avant: lundi,
+  });
+  if (error) throw error;
+  return data as DateLocale[];
+}

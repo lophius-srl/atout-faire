@@ -33,6 +33,10 @@ insert into public.cartes (tache_id, nom, categorie, penibilite, echeance, date_
 do $$ begin
   perform pg_temp.verifier(public.semaines_vaincues('2026-11-09') = 2, 'Deux semaines vaincues attendues');
   perform pg_temp.verifier(public.semaines_vaincues('2026-10-26') = 1, 'Une seule semaine vaincue avant le 26 octobre');
+  -- La galerie liste les mêmes semaines, de la plus ancienne à la plus récente.
+  perform pg_temp.verifier(
+    array(select public.semaines_vaincues_detail('2026-11-09')) = array['2026-10-19', '2026-11-02']::date[],
+    'La galerie devrait montrer les semaines du 19 octobre et du 2 novembre');
 end $$;
 
 -- Un autre foyer part de zéro.
@@ -40,5 +44,7 @@ select pg_temp.en_tant_que('00000000-0000-0000-0000-00000000000c');
 select public.creer_foyer();
 do $$ begin
   perform pg_temp.verifier(public.semaines_vaincues('2026-11-09') = 0, 'C ne doit pas voir les semaines de A');
+  perform pg_temp.verifier(
+    not exists (select public.semaines_vaincues_detail('2026-11-09')), 'C ne doit pas voir la galerie de A');
 end $$;
 reset role;
