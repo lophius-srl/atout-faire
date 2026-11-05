@@ -1,3 +1,4 @@
+import { dateDansFuseau, type DateLocale } from "$lib/distribution";
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface MonFoyer {
@@ -29,4 +30,12 @@ export async function chercherMonFoyer(
     nombreDeMembres: count,
     fuseau: foyer.fuseau,
   };
+}
+
+/** La date du jour pour le foyer de l'utilisateur (utile dans les actions, qui n'ont pas les données du layout). */
+export async function aujourdhuiDansMonFoyer(
+  supabase: SupabaseClient,
+): Promise<DateLocale> {
+  const foyer = await chercherMonFoyer(supabase);
+  return dateDansFuseau(new Date(), foyer?.fuseau ?? "Europe/Paris");
 }

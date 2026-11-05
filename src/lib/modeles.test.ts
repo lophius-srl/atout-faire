@@ -33,7 +33,7 @@ describe("modèles de tâches", () => {
   it.each(MODELES.map((m) => [m.nom, m] as const))(
     "« %s » est une tâche valide",
     (_, modele) => {
-      expect(lireSaisieTache(enFormulaire(modele))).toEqual({
+      expect(lireSaisieTache(enFormulaire(modele), "2026-11-05")).toEqual({
         ok: true,
         tache: { ...modele, fixePour: null },
       });

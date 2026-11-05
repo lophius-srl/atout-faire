@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { libelleFrequence, libellePenibilite, lireSaisieTache } from "./deck";
+import {
+  estPassee,
+  libelleFrequence,
+  libellePenibilite,
+  lireSaisieTache,
+} from "./deck";
+
+// Le 2026-11-05 est un jeudi.
+const AUJOURDHUI = "2026-11-05";
 
 function formulaire(champs: Record<string, string | string[]>): FormData {
   const donnees = new FormData();
@@ -19,7 +27,7 @@ const valide = {
 
 describe("saisie d'une tâche", () => {
   it("accepte une tâche quotidienne et range les jours", () => {
-    const resultat = lireSaisieTache(formulaire(valide));
+    const resultat = lireSaisieTache(formulaire(valide), AUJOURDHUI);
     expect(resultat).toEqual({
       ok: true,
       tache: {
@@ -27,6 +35,7 @@ describe("saisie d'une tâche", () => {
         categorie: "cuisine",
         frequence: "quotidienne",
         jours: [1, 3],
+        dateUnique: null,
         penibilite: 2,
         fixePour: null,
       },
@@ -36,9 +45,32 @@ describe("saisie d'une tâche", () => {
   it("ignore les jours d'une tâche hebdomadaire et garde la tâche fixe", () => {
     const resultat = lireSaisieTache(
       formulaire({ ...valide, frequence: "hebdomadaire", fixePour: "abc" }),
+      AUJOURDHUI,
     );
     expect(resultat.ok && resultat.tache.jours).toBeNull();
     expect(resultat.ok && resultat.tache.fixePour).toBe("abc");
+  });
+
+  it("accepte une tâche ponctuelle datée d'aujourd'hui ou plus tard, sans jours", () => {
+    for (const date of [AUJOURDHUI, "2026-12-24"]) {
+      const resultat = lireSaisieTache(
+        formulaire({ ...valide, frequence: "ponctuelle", dateUnique: date }),
+        AUJOURDHUI,
+      );
+      expect(resultat.ok && resultat.tache).toMatchObject({
+        frequence: "ponctuelle",
+        dateUnique: date,
+        jours: null,
+      });
+    }
+  });
+
+  it("oublie la date d'une tâche qui n'est pas ponctuelle", () => {
+    const resultat = lireSaisieTache(
+      formulaire({ ...valide, dateUnique: "2026-12-24" }),
+      AUJOURDHUI,
+    );
+    expect(resultat.ok && resultat.tache.dateUnique).toBeNull();
   });
 
   it.each([
@@ -50,13 +82,19 @@ describe("saisie d'une tâche", () => {
     [{ jours: ["8"] }, "Choisis au moins un jour."],
     [{ penibilite: "" }, "Choisis une pénibilité."],
     [{ penibilite: "4" }, "Choisis une pénibilité."],
+    [{ frequence: "ponctuelle" }, "Choisis la date de la tâche."],
+    [
+      { frequence: "ponctuelle", dateUnique: "12/11/2026" },
+      "Choisis la date de la tâche.",
+    ],
+    [
+      { frequence: "ponctuelle", dateUnique: "2026-11-04" },
+      "Cette date est passée : choisis aujourd'hui ou plus tard.",
+    ],
   ])("refuse %o avec un message clair", (modification, erreur) => {
-    expect(lireSaisieTache(formulaire({ ...valide, ...modification }))).toEqual(
-      {
-        ok: false,
-        erreur,
-      },
-    );
+    expect(
+      lireSaisieTache(formulaire({ ...valide, ...modification }), AUJOURDHUI),
+    ).toEqual({ ok: false, erreur });
   });
 });
 
@@ -67,13 +105,41 @@ describe("libellés", () => {
     [[6, 7], "Le week-end"],
     [[1, 3, 5], "Lun, mer, ven"],
   ])("décrit les jours %o", (jours, libelle) => {
-    expect(libelleFrequence({ frequence: "quotidienne", jours })).toBe(libelle);
+    expect(
+      libelleFrequence({ frequence: "quotidienne", jours, dateUnique: null }),
+    ).toBe(libelle);
   });
 
   it("décrit une tâche hebdomadaire", () => {
-    expect(libelleFrequence({ frequence: "hebdomadaire", jours: null })).toBe(
-      "Une fois par semaine",
-    );
+    expect(
+      libelleFrequence({
+        frequence: "hebdomadaire",
+        jours: null,
+        dateUnique: null,
+      }),
+    ).toBe("Une fois par semaine");
+  });
+
+  it("donne la date d'une tâche ponctuelle", () => {
+    expect(
+      libelleFrequence({
+        frequence: "ponctuelle",
+        jours: null,
+        dateUnique: "2026-11-12",
+      }),
+    ).toBe("Le jeudi 12 novembre");
+  });
+
+  it("repère une tâche ponctuelle passée", () => {
+    const ponctuelle = (dateUnique: string) => ({
+      frequence: "ponctuelle" as const,
+      dateUnique,
+    });
+    expect(estPassee(ponctuelle("2026-11-04"), AUJOURDHUI)).toBe(true);
+    expect(estPassee(ponctuelle(AUJOURDHUI), AUJOURDHUI)).toBe(false);
+    expect(
+      estPassee({ frequence: "hebdomadaire", dateUnique: null }, AUJOURDHUI),
+    ).toBe(false);
   });
 
   it("nomme la pénibilité", () => {

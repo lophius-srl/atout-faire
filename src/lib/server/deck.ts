@@ -8,22 +8,28 @@ interface LigneTache {
   categorie: CategorieId;
   frequence: Frequence;
   jours: number[] | null;
+  date_unique: string | null;
   penibilite: Penibilite;
   fixe_pour: string | null;
   cree_le: string;
 }
 
 const COLONNES =
-  "id, nom, categorie, frequence, jours, penibilite, fixe_pour, cree_le";
+  "id, nom, categorie, frequence, jours, date_unique, penibilite, fixe_pour, cree_le";
 
 function versTache(ligne: LigneTache): Tache {
-  const { fixe_pour, cree_le, ...reste } = ligne;
-  return { ...reste, fixePour: fixe_pour, creeLe: cree_le };
+  const { fixe_pour, cree_le, date_unique, ...reste } = ligne;
+  return {
+    ...reste,
+    dateUnique: date_unique,
+    fixePour: fixe_pour,
+    creeLe: cree_le,
+  };
 }
 
 function versLigne(tache: SaisieTache) {
-  const { fixePour, ...reste } = tache;
-  return { ...reste, fixe_pour: fixePour };
+  const { fixePour, dateUnique, ...reste } = tache;
+  return { ...reste, date_unique: dateUnique, fixe_pour: fixePour };
 }
 
 /** Les règles RLS limitent la lecture et l'écriture au deck du foyer de l'utilisateur. */
