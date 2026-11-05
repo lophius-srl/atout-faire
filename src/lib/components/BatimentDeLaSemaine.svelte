@@ -1,11 +1,14 @@
 <script lang="ts">
-  import { fenetresAllumees, type Batiment } from "$lib/batiments";
+  import { batimentDuNiveau, fenetresAllumees } from "$lib/batiments";
 
   let {
-    batiment,
+    niveau,
     retournees,
     total,
-  }: { batiment: Batiment; retournees: number; total: number } = $props();
+  }: { niveau: number; retournees: number; total: number } = $props();
+
+  const batiment = $derived(batimentDuNiveau(niveau));
+  const suivant = $derived(batimentDuNiveau(niveau + 1));
 
   const allumees = $derived(
     fenetresAllumees(retournees, total, batiment.fenetres.length),
@@ -94,13 +97,13 @@
     {/each}
   </svg>
   <figcaption>
+    <span class="niveau">Niveau {niveau + 1}</span>
     {#if complet}
-      ✨ {nom} brille de mille feux. Bravo à vous deux !
+      ✨ {nom} brille de mille feux ! La semaine prochaine, niveau {niveau + 2} :
+      {suivant.nom}.
     {:else}
-      Cette semaine : <strong>{batiment.nom}</strong> · {allumees} fenêtre{allumees >
-      1
-        ? "s"
-        : ""} allumée{allumees > 1 ? "s" : ""} sur {batiment.fenetres.length}
+      {nom} : {allumees}/{batiment.fenetres.length} fenêtres allumées. Illuminez-{batiment.pronom}
+      entièrement pour passer {suivant.destination}.
     {/if}
   </figcaption>
 </figure>
@@ -135,6 +138,16 @@
     color: #f4efff;
     font-size: 0.9rem;
     font-weight: 600;
+  }
+
+  .niveau {
+    display: block;
+    margin-bottom: 2px;
+    color: #b8b2e6;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
 
   .complet figcaption {

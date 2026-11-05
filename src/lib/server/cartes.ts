@@ -100,3 +100,15 @@ export async function listerCartesDeLaSemaine(
   if (error) throw error;
   return (data as LigneCarte[]).map(versCarteDuFoyer);
 }
+
+/** Niveau du foyer : semaines passées entièrement illuminées (avant ce lundi). */
+export async function semainesVaincues(
+  supabase: SupabaseClient,
+  lundi: DateLocale,
+): Promise<number> {
+  const { data, error } = await supabase.rpc("semaines_vaincues", {
+    avant: lundi,
+  });
+  if (error) throw error;
+  return data as number;
+}

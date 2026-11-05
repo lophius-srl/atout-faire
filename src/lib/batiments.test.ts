@@ -1,26 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { BATIMENTS, batimentDeLaSemaine, fenetresAllumees } from "./batiments";
-import { ajouterJours } from "./distribution";
+import { BATIMENTS, batimentDuNiveau, fenetresAllumees } from "./batiments";
 
-describe("bâtiment de la semaine", () => {
-  it("change chaque semaine et suit l'ordre des niveaux", () => {
-    const lundi = "2026-11-02";
-    const suite = [0, 1, 2, 3, 4, 5].map(
-      (n) => batimentDeLaSemaine(ajouterJours(lundi, 7 * n)).id,
+describe("bâtiment du niveau", () => {
+  it("commence par la cabane et monte d'un bâtiment par semaine vaincue", () => {
+    expect([0, 1, 2, 3, 4].map((n) => batimentDuNiveau(n).id)).toEqual(
+      BATIMENTS.map((b) => b.id),
     );
-    const depart = BATIMENTS.findIndex((b) => b.id === suite[0]);
-    suite.forEach((id, n) =>
-      expect(id).toBe(BATIMENTS[(depart + n) % BATIMENTS.length].id),
-    );
-    expect(suite[5]).toBe(suite[0]);
   });
 
-  it("commence par la cabane la semaine de référence", () => {
-    expect(batimentDeLaSemaine("2026-01-05").id).toBe("cabane");
-  });
-
-  it("fonctionne aussi avant la semaine de référence", () => {
-    expect(batimentDeLaSemaine("2025-12-29").id).toBe("chateau");
+  it("repart de la cabane après le château", () => {
+    expect(batimentDuNiveau(5).id).toBe("cabane");
+    expect(batimentDuNiveau(9).id).toBe("chateau");
   });
 
   it("a des bâtiments de plus en plus grands", () => {
