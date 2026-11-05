@@ -1,5 +1,7 @@
 <script lang="ts">
+  import BandeauMercis from "$lib/components/BandeauMercis.svelte";
   import Celebration from "$lib/components/Celebration.svelte";
+  import FaitParLautre from "$lib/components/FaitParLautre.svelte";
   import { duree } from "$lib/animations";
   import Balance from "$lib/components/Balance.svelte";
   import CarteAvecActions from "$lib/components/CarteAvecActions.svelte";
@@ -45,6 +47,10 @@
 <Celebration progression={data.progression} />
 
 <h1>Ma main</h1>
+
+{#if data.mercisRecus}
+  <BandeauMercis message={data.mercisRecus} />
+{/if}
 <p class="aide">
   Les cartes que tu as prises cette semaine. Touche une carte pour agir.
 </p>
@@ -83,6 +89,10 @@
     {/if}
   </section>
 {/each}
+
+{#if data.faitParLautre.length > 0}
+  <FaitParLautre cartes={data.faitParLautre} />
+{/if}
 
 <style>
   h1 {
