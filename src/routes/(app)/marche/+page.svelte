@@ -40,16 +40,21 @@
     if (!onglet || !piocheeParMoi || duration === 0) {
       return fade(element, { duration: duree(200) });
     }
-    const { dx, dy, echelle } = trajetVersCible(
-      element.getBoundingClientRect(),
-      onglet.getBoundingClientRect(),
-    );
     finEnvol = performance.now() + duration;
-    return {
-      duration,
-      easing: cubicIn,
-      css: (_t: number, u: number) =>
-        `z-index: 10; transform: translate(${dx * u}px, ${dy * u}px) scale(${1 - (1 - echelle) * u}) rotate(${-14 * u}deg); opacity: ${1 - 0.6 * u * u};`,
+    // Différé : la grille (animate:flip) fige d'abord la carte à sa place, par un
+    // positionnement absolu compensé par un transform. L'envol part de là et garde ce transform.
+    return () => {
+      const base = (element as HTMLElement).style.transform;
+      const { dx, dy, echelle } = trajetVersCible(
+        element.getBoundingClientRect(),
+        onglet.getBoundingClientRect(),
+      );
+      return {
+        duration,
+        easing: cubicIn,
+        css: (_t: number, u: number) =>
+          `z-index: 10; transform: ${base} translate(${dx * u}px, ${dy * u}px) scale(${1 - (1 - echelle) * u}) rotate(${-14 * u}deg); opacity: ${1 - 0.6 * u * u};`,
+      };
     };
   }
 
