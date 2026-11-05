@@ -7,12 +7,36 @@
   import CarteAvecActions from "$lib/components/CarteAvecActions.svelte";
   import Echanges from "$lib/components/Echanges.svelte";
   import { separerMain } from "$lib/main";
+  import {
+    avecRetournements,
+    progressionOptimiste,
+    sansCartesRetirees,
+  } from "$lib/optimiste";
+  import { actionsEnAttente, oublierConfirmees } from "$lib/optimiste.svelte";
   import { flip } from "svelte/animate";
   import type { PageData } from "./$types";
 
   let { data }: { data: PageData } = $props();
 
-  const main = $derived(separerMain(data.maMain));
+  // La carte touchée bouge tout de suite ; les données du serveur suivent.
+  const main = $derived(
+    separerMain(
+      avecRetournements(
+        sansCartesRetirees(data.maMain, actionsEnAttente, (c) => c.id),
+        actionsEnAttente,
+      ),
+    ),
+  );
+  $effect(() => oublierConfirmees(data.maMain, "main"));
+  const duJour = $derived(new Set(data.duJour));
+  const progression = $derived(
+    progressionOptimiste(
+      data.progression,
+      data.maMain,
+      actionsEnAttente,
+      duJour,
+    ),
+  );
 
   // Une seule carte affiche ses actions à la fois ; toucher ailleurs les referme.
   let carteOuverte = $state<string | null>(null);
@@ -44,7 +68,7 @@
   <title>Ma main · Atout faire</title>
 </svelte:head>
 
-<Celebration progression={data.progression} recompense={data.recompenseEnJeu} />
+<Celebration {progression} recompense={data.recompenseEnJeu} />
 
 <h1>Ma main</h1>
 

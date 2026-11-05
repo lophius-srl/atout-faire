@@ -2,6 +2,7 @@
   import { enhance } from "$app/forms";
   import type { Carte } from "$lib/cartes";
   import { avecRetour } from "$lib/formulaire";
+  import type { ActionOptimiste } from "$lib/optimiste";
   import { DEPENDANCE_CARTES } from "$lib/temps-reel";
   import CarteTache from "./Carte.svelte";
 
@@ -17,7 +18,13 @@
     basculer: () => void;
   } = $props();
 
-  const actions = $derived(
+  const actions: {
+    action: string;
+    faite: string;
+    libelle: string;
+    message: string;
+    optimiste?: ActionOptimiste;
+  }[] = $derived(
     carte.retournee
       ? [
           {
@@ -25,6 +32,7 @@
             faite: "non",
             libelle: "↺ Remettre à faire",
             message: "Carte remise à faire",
+            optimiste: { type: "retourner", faite: false },
           },
         ]
       : [
@@ -33,6 +41,7 @@
             faite: "oui",
             libelle: "✓ Fait",
             message: "Bien joué ✓",
+            optimiste: { type: "retourner", faite: true },
           },
           ...(peutEchanger
             ? [
@@ -49,6 +58,7 @@
             faite: "",
             libelle: "↩ Marché",
             message: "Carte repartie sur le Marché",
+            optimiste: { type: "retirer", depuis: "main" },
           },
         ],
   );
@@ -72,11 +82,15 @@
       aria-label={`Actions pour ${carte.tache}`}
     >
       <p class="titre" aria-hidden="true">{carte.tache}</p>
-      {#each actions as { action, faite, libelle, message } (action + faite)}
+      {#each actions as { action, faite, libelle, message, optimiste } (action + faite)}
         <form
           method="POST"
           action={`?/${action}`}
-          use:enhance={avecRetour(message, { recharger: DEPENDANCE_CARTES })}
+          use:enhance={avecRetour(message, {
+            recharger: DEPENDANCE_CARTES,
+            optimiste: optimiste && { carte: carte.id, action: optimiste },
+            surEnvoi: optimiste && basculer,
+          })}
         >
           <input type="hidden" name="carte" value={carte.id} />
           {#if faite}<input type="hidden" name="faite" value={faite} />{/if}

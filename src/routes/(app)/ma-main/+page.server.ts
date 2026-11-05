@@ -65,6 +65,14 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
   );
   return {
     progression,
+    duJour: cartes
+      .filter(
+        (c) =>
+          c.detenteur === moi &&
+          c.carte.echeance.type === "jour" &&
+          c.dateEcheance === aujourdhui,
+      )
+      .map((c) => c.carte.id),
     recompenseEnJeu:
       recompenseDuBoss(recompenses, niveau + 1)?.description ?? null,
     mercisRecus: mercisNonVus(mercis, cartes, moi),

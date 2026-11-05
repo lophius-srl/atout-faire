@@ -31,6 +31,16 @@ describe("progression du foyer", () => {
     expect(progressionDuFoyer(cartes, MARDI).jourFini).toBe(true);
   });
 
+  it("compte les cartes du jour qui restent à faire", () => {
+    const cartes = [
+      carte("jour", MARDI, true),
+      carte("jour", MARDI, false),
+      carte("jour", "2026-11-04", false),
+      carte("semaine", "2026-11-02", false),
+    ];
+    expect(progressionDuFoyer(cartes, MARDI).resteDuJour).toBe(1);
+  });
+
   it("ne finit pas une journée sans cartes", () => {
     expect(
       progressionDuFoyer([carte("semaine", "2026-11-02", true)], MARDI)
