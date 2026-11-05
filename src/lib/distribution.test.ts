@@ -7,6 +7,7 @@ import {
   prochaineSemaineDuMois,
   type TacheADistribuer,
 } from "./distribution";
+import type { Vacances } from "./vacances";
 
 // Le 2026-11-03 est un mardi.
 const MARDI = "2026-11-03";
@@ -26,8 +27,12 @@ function tache(modifications: Partial<TacheADistribuer>): TacheADistribuer {
   };
 }
 
-const resume = (aujourdhui: string, taches: TacheADistribuer[]) =>
-  cartesAttendues(taches, aujourdhui).map(
+const resume = (
+  aujourdhui: string,
+  taches: TacheADistribuer[],
+  vacances: readonly Vacances[] = [],
+) =>
+  cartesAttendues(taches, aujourdhui, vacances).map(
     (c) => `${c.tacheId} ${c.echeance} ${c.dateEcheance}`,
   );
 
@@ -196,6 +201,52 @@ describe("cartes attendues", () => {
       expect(prochaineSemaineDuMois("2026-11-05")).toBe("2026-11-02");
       expect(prochaineSemaineDuMois("2026-11-10")).toBe("2026-12-07");
       expect(prochaineSemaineDuMois("2026-12-31")).toBe("2027-01-04");
+    });
+  });
+
+  describe("vacances", () => {
+    const quotidienne = tache({ jours: [1, 2, 3, 4, 5, 6, 7] });
+    const linge = tache({
+      id: "linge",
+      frequence: "hebdomadaire",
+      jours: null,
+    });
+    const rdv = tache({
+      id: "rdv",
+      frequence: "ponctuelle",
+      jours: null,
+      dateUnique: "2026-11-04",
+    });
+
+    it("ne donne aucune carte pendant les jours de vacances", () => {
+      const vacances = [{ debut: "2026-11-04", fin: "2026-11-20" }];
+      expect(resume("2026-11-05", [quotidienne, rdv], vacances)).toEqual([
+        "vaisselle jour 2026-11-02",
+        "vaisselle jour 2026-11-03",
+      ]);
+    });
+
+    it("garde la carte de la semaine quand la semaine est en partie en vacances", () => {
+      const vacances = [{ debut: "2026-11-04", fin: "2026-11-20" }];
+      expect(resume("2026-11-05", [linge], vacances)).toEqual([
+        "linge semaine 2026-11-02",
+      ]);
+    });
+
+    it("ne donne rien du tout pour une semaine entièrement en vacances", () => {
+      const vacances = [{ debut: "2026-10-31", fin: "2026-11-08" }];
+      expect(resume("2026-11-08", [quotidienne, linge], vacances)).toEqual([]);
+    });
+
+    it("ne redonne pas les jours d'une période finie quand une autre est prévue", () => {
+      const vacances = [
+        { debut: "2026-10-31", fin: "2026-11-03" },
+        { debut: "2026-12-20", fin: "2027-01-03" },
+      ];
+      expect(resume("2026-11-05", [quotidienne], vacances)).toEqual([
+        "vaisselle jour 2026-11-04",
+        "vaisselle jour 2026-11-05",
+      ]);
     });
   });
 });

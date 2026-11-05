@@ -1,4 +1,5 @@
 import type { Tache } from "./deck";
+import { estEnVacances, semaineEnVacances, type Vacances } from "./vacances";
 
 /** Date locale au format AAAA-MM-JJ. */
 export type DateLocale = string;
@@ -101,30 +102,41 @@ function nouvelleCarte(
 export function cartesAttendues(
   taches: readonly TacheADistribuer[],
   aujourdhui: DateLocale,
+  /** Rien pendant les vacances ; pas de carte de la semaine si elle est entièrement en vacances. */
+  vacances: readonly Vacances[] = [],
 ): NouvelleCarte[] {
   const lundi = lundiDeLaSemaine(aujourdhui);
   const cartes: NouvelleCarte[] = [];
+  const semaineLibre = !semaineEnVacances(lundi, vacances);
   for (const tache of taches) {
     if (tache.frequence === "hebdomadaire") {
-      cartes.push(nouvelleCarte(tache, "semaine", lundi));
+      if (semaineLibre) cartes.push(nouvelleCarte(tache, "semaine", lundi));
       continue;
     }
     if (tache.frequence === "bimensuelle" || tache.frequence === "mensuelle") {
-      if (donneUneCarteLaSemaine(tache, lundi)) {
+      if (semaineLibre && donneUneCarteLaSemaine(tache, lundi)) {
         cartes.push(nouvelleCarte(tache, "semaine", lundi));
       }
       continue;
     }
     if (tache.frequence === "ponctuelle") {
       const date = tache.dateUnique;
-      if (date && date >= lundi && date <= aujourdhui) {
+      if (
+        date &&
+        date >= lundi &&
+        date <= aujourdhui &&
+        !estEnVacances(date, vacances)
+      ) {
         cartes.push(nouvelleCarte(tache, "jour", date));
       }
       continue;
     }
     const debut = tache.creeLe > lundi ? tache.creeLe : lundi;
     for (let jour = debut; jour <= aujourdhui; jour = ajouterJours(jour, 1)) {
-      if (tache.jours?.includes(jourDeLaSemaine(jour))) {
+      if (
+        tache.jours?.includes(jourDeLaSemaine(jour)) &&
+        !estEnVacances(jour, vacances)
+      ) {
         cartes.push(nouvelleCarte(tache, "jour", jour));
       }
     }

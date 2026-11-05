@@ -2,7 +2,11 @@
   import { invalidate } from "$app/navigation";
   import BarreHaut from "$lib/components/BarreHaut.svelte";
   import NavigationBas from "$lib/components/NavigationBas.svelte";
-  import { DEPENDANCE_CARTES, ecouterCartes } from "$lib/temps-reel";
+  import {
+    DEPENDANCE_CARTES,
+    DEPENDANCE_FOYER,
+    ecouterCartes,
+  } from "$lib/temps-reel";
   import type { Snippet } from "svelte";
   import type { LayoutData } from "./$types";
 
@@ -11,7 +15,11 @@
   const rafraichirCartes = () => invalidate(DEPENDANCE_CARTES);
 
   // Les changements faits sur l'autre téléphone arrivent en direct.
-  $effect(() => ecouterCartes(data.foyer.id, rafraichirCartes));
+  $effect(() =>
+    ecouterCartes(data.foyer.id, rafraichirCartes, () =>
+      invalidate(DEPENDANCE_FOYER),
+    ),
+  );
 
   // En revenant sur l'app (iPhone en veille, autre appli), on recharge au cas où la connexion a été coupée.
   function auRetourSurLApp() {
@@ -27,12 +35,25 @@
 />
 
 <div class="ecran">
+  {#if data.bandeauVacances}
+    <p class="vacances" role="status">{data.bandeauVacances}</p>
+  {/if}
   {@render children()}
 </div>
 
 <NavigationBas />
 
 <style>
+  .vacances {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #d6ecff;
+    color: #24507a;
+    font-weight: 700;
+    text-align: center;
+  }
+
   .ecran {
     max-width: 480px;
     margin: 0 auto;
