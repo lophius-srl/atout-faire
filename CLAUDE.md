@@ -4,7 +4,9 @@
 - **Nom** : Atout faire
 - **But** : répartir équitablement les tâches de la maison entre deux parents, sous forme de cartes
   qu'on pioche quand on veut, qu'on s'échange, et qu'on retourne une fois faites. Une carte par tâche et par jour.
-  Le seul but est de finir les tâches : **pas de points, de récompenses ni de classement**.
+  Le seul but est de finir les tâches ensemble : **rien d'individuel**. Pas de points ni de classement par personne ;
+  tout ce qui se compte se compte pour le foyer (bâtiments à vaincre, célébrations), et les récompenses sont
+  communes et choisies à deux.
 - **Utilisateurs** : un couple, deux iPhone (PWA installée depuis Safari), interface en français.
 - **Stack** : TypeScript, pnpm, **SvelteKit 5** (runes) + PWA, hébergé sur **Vercel** (Hobby),
   **Supabase** (Free) pour la base Postgres, la connexion et le temps réel. Tests **Vitest**, ESLint + Prettier (ADR 0002).
