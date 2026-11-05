@@ -1,4 +1,6 @@
 import { dateDansFuseau, heureDansFuseau } from "$lib/distribution";
+import { proposerCoupDeMain } from "$lib/balance";
+import { poidsDesMains } from "$lib/main";
 import { niveauAttente } from "$lib/marche";
 import { listerCartesDeLaSemaine } from "$lib/server/cartes";
 import { DEPENDANCE_CARTES } from "$lib/temps-reel";
@@ -13,20 +15,23 @@ export const load: PageServerLoad = async ({ locals, parent, depends }) => {
     date: dateDansFuseau(instant, foyer.fuseau),
     heure: heureDansFuseau(instant, foyer.fuseau),
   };
-  const cartes = await listerCartesDeLaSemaine(
-    locals.supabase,
-    maintenant.date,
-  );
+  const [utilisateur, cartes] = await Promise.all([
+    locals.utilisateurConnecte(),
+    listerCartesDeLaSemaine(locals.supabase, maintenant.date),
+  ]);
+  const poids = poidsDesMains(cartes, utilisateur?.id ?? "");
+  const auMarche = cartes
+    .filter((c) => c.detenteur === null && !c.carte.retournee)
+    .map((c) => ({
+      carte: c.carte,
+      niveau: niveauAttente(
+        { echeance: c.carte.echeance.type, dateEcheance: c.dateEcheance },
+        maintenant,
+      ),
+    }));
   return {
-    auMarche: cartes
-      .filter((c) => c.detenteur === null && !c.carte.retournee)
-      .map((c) => ({
-        carte: c.carte,
-        niveau: niveauAttente(
-          { echeance: c.carte.echeance.type, dateEcheance: c.dateEcheance },
-          maintenant,
-        ),
-      })),
+    auMarche,
+    coupDeMain: proposerCoupDeMain(poids.moi, poids.autre, auMarche.length),
   };
 };
 

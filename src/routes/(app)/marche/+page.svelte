@@ -35,6 +35,13 @@
     Les cartes qui attendent preneur. Touche une carte pour la prendre.
   </p>
 
+  {#if data.coupDeMain}
+    <p class="coup-de-main" role="status">
+      🤝 L'autre en porte beaucoup en ce moment. Une carte pour lui donner un
+      coup de main ?
+    </p>
+  {/if}
+
   {#each sections as section (section.titre)}
     <section>
       <h2>{section.titre}</h2>
@@ -83,6 +90,15 @@
   h1 {
     margin: 0;
     font-size: 1.8rem;
+  }
+
+  .coup-de-main {
+    margin: 0 0 8px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #e7e1ff;
+    color: #5a46a8;
+    font-weight: 700;
   }
 
   .aide {

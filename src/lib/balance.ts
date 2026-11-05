@@ -39,3 +39,21 @@ export function descriptionBalance(inclinaison: number): string {
     ? "L'autre en porte beaucoup plus."
     : "L'autre en porte un peu plus.";
 }
+
+/** Seuil à partir duquel la balance « penche beaucoup » (même seuil que descriptionBalance). */
+const SEUIL_BEAUCOUP = INCLINAISON_MAX * 0.6;
+
+/**
+ * Proposer un coup de main : la balance penche nettement du côté de l'autre
+ * et il reste des cartes à prendre. Jamais un reproche, seulement une invitation.
+ */
+export function proposerCoupDeMain(
+  poidsMoi: number,
+  poidsAutre: number,
+  cartesAuMarche: number,
+): boolean {
+  return (
+    cartesAuMarche > 0 &&
+    inclinaisonBalance(poidsMoi, poidsAutre) <= -SEUIL_BEAUCOUP
+  );
+}
