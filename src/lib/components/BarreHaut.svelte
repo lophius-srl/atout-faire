@@ -114,9 +114,6 @@
         <a href={resolve("/vacances")} onclick={() => (panneauOuvert = false)}>
           <span aria-hidden="true">🌴</span> Nos vacances
         </a>
-        <a href={resolve("/souvenirs")} onclick={() => (panneauOuvert = false)}>
-          <span aria-hidden="true">🏆</span> Nos souvenirs
-        </a>
       </nav>
     </div>
   {/if}
